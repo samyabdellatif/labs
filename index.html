@@ -5,6 +5,47 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Statistics Department Computer Labs Schedule</title>
 <style type="text/css">
+* {box-sizing: border-box}
+
+/* Set height of body and the document to 100% */
+body, html {
+  height: 100%;
+  margin: 0;
+  font-family: Arial;
+}
+
+/* Style tab links */
+.tablink {
+  background-color: #555;
+  color: white;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  font-size: 17px;
+  width: 25%;
+}
+
+.tablink:hover {
+  background-color: #777;
+}
+
+/* Style the tab content (and add height:100% for full page content) */
+.tabcontent {
+  color: white;
+  display: none;
+  padding: 100px 20px;
+  height: 100%;
+}
+
+#lab1 {background-color: red;}
+#lab2 {background-color: green;}
+#lab3 {background-color: blue;}
+#lab4 {background-color: orange;}
+#lab5 {background-color: yellow;}
+#lab6 {background-color: DodgerBlue;}
+
 .flex-container {
   display: flex;
   flex-wrap: nowrap;
@@ -21,7 +62,13 @@
 </style>
 </head>
 <body>
-	<div class="flex-container">
+<button class="tablink" onclick="openPage('Home', this, 'red')" id="defaultOpen">LAB1</button>
+<button class="tablink" onclick="openPage('News', this, 'green')">LAB2</button>
+<button class="tablink" onclick="openPage('Contact', this, 'blue')">LAB3</button>
+<button class="tablink" onclick="openPage('About', this, 'orange')">LAB4</button>
+<button class="tablink" onclick="openPage('Contact', this, 'yellow')">LAB5</button>
+<button class="tablink" onclick="openPage('About', this, 'DodgerBlue')">LAB6</button>
+	<div class="flex-container" id="LAB1" class="tabcontent">
 		<div>SUN</div>
 		<div>2</div>
 		<div>3</div>
