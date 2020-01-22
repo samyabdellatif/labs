@@ -24,7 +24,8 @@ body, html {
   cursor: pointer;
   padding: 14px 16px;
   font-size: 17px;
-  width: 25%;
+  font-weight: bold;
+  width: 16.66666%;
 }
 
 .tablink:hover {
@@ -39,84 +40,161 @@ body, html {
   height: 100%;
 }
 
-#lab1 {background-color: red;}
-#lab2 {background-color: green;}
-#lab3 {background-color: blue;}
-#lab4 {background-color: orange;}
-#lab5 {background-color: yellow;}
-#lab6 {background-color: DodgerBlue;}
+#LAB1,#LAB2,#LAB3,#LAB4,#LAB5,#LAB6 {background-color: orange;}
 
 .flex-container {
   display: flex;
   flex-wrap: nowrap;
   background-color: DodgerBlue;
 }
+.flex-container:first-child {
+  background-color: navy;
+}
 .flex-container > div {
+  color: DodgerBlue;
   background-color: #f1f1f1;
   width: 200px;
   margin: 10px;
   text-align: center;
   line-height: 75px;
-  font-size: 30px;
+  font-size: 14px;
 }
 </style>
 </head>
 <body>
-<button class="tablink" onclick="openPage('Home', this, 'red')" id="defaultOpen">LAB1</button>
-<button class="tablink" onclick="openPage('News', this, 'green')">LAB2</button>
-<button class="tablink" onclick="openPage('Contact', this, 'blue')">LAB3</button>
-<button class="tablink" onclick="openPage('About', this, 'orange')">LAB4</button>
-<button class="tablink" onclick="openPage('Contact', this, 'yellow')">LAB5</button>
-<button class="tablink" onclick="openPage('About', this, 'DodgerBlue')">LAB6</button>
-	<div class="flex-container" id="LAB1" class="tabcontent">
-		<div>SUN</div>
+<button class="tablink" onclick="openPage('LAB1', this, 'orange')" id="defaultOpen">LAB1</button>
+<button class="tablink" onclick="openPage('LAB2', this, 'orange')">LAB2</button>
+<button class="tablink" onclick="openPage('LAB3', this, 'orange')">LAB3</button>
+<button class="tablink" onclick="openPage('LAB4', this, 'orange')">LAB4</button>
+<button class="tablink" onclick="openPage('LAB5', this, 'orange')">LAB5</button>
+<button class="tablink" onclick="openPage('LAB6', this, 'orange')">LAB6</button>
+<div id="LAB1" class="tabcontent">
+  <div id="TIME" class="flex-container">
+		<div>Time</div>
+    <div>08~08:50</div>
+		<div>09~09:50</div>
+		<div>10~10:50</div>
+		<div>11~11:50</div>
+		<div>12~12:50</div>
+    <div>01~01:50</div>
+		<div>02~02:50</div>
+		<div>03~03:50</div>
+    <div>04~04:50</div>
+    <div>05~05:50</div>
+    <div>06~06:50</div>
+    <div>07~07:50</div>
+	</div>
+  <div id="SUN" class="flex-container">
+    <div>SUN</div>
+    <div>1</div>
 		<div>2</div>
 		<div>3</div>
 		<div>4</div>
 		<div>5</div>
-		<div>6</div>
+    <div>6</div>
 		<div>7</div>
 		<div>8</div>
-	</div>
-	<div class="flex-container">
-		<div>MON</div>
+    <div>9</div>
+    <div>10</div>
+    <div>11</div>
+    <div>12</div>
+  </div>
+  <div id="MON" class="flex-container">
+    <div>MON</div>
+    <div>1</div>
 		<div>2</div>
 		<div>3</div>
 		<div>4</div>
 		<div>5</div>
-		<div>6</div>
+    <div>6</div>
 		<div>7</div>
 		<div>8</div>
-	</div>
-	<div class="flex-container">
-		<div>TUE</div>
+    <div>9</div>
+    <div>10</div>
+    <div>11</div>
+    <div>12</div>
+  </div>
+  <div id="TUE" class="flex-container">
+    <div>TUE</div>
+    <div>1</div>
 		<div>2</div>
 		<div>3</div>
 		<div>4</div>
 		<div>5</div>
-		<div>6</div>
+    <div>6</div>
 		<div>7</div>
 		<div>8</div>
-	</div>
-	<div class="flex-container">
-		<div>WED</div>
+    <div>9</div>
+    <div>10</div>
+    <div>11</div>
+    <div>12</div>
+  </div>
+  <div id="WED" class="flex-container">
+    <div>WED</div>
+    <div>1</div>
 		<div>2</div>
 		<div>3</div>
 		<div>4</div>
 		<div>5</div>
-		<div>6</div>
+    <div>6</div>
 		<div>7</div>
 		<div>8</div>
-	</div>
-	<div class="flex-container">
-		<div>THU</div>
+    <div>9</div>
+    <div>10</div>
+    <div>11</div>
+    <div>12</div>
+  </div>
+  <div id="THU" class="flex-container">
+    <div>THU</div>
+    <div>1</div>
 		<div>2</div>
 		<div>3</div>
 		<div>4</div>
 		<div>5</div>
-		<div>6</div>
+    <div>6</div>
 		<div>7</div>
 		<div>8</div>
-	</div>
+    <div>9</div>
+    <div>10</div>
+    <div>11</div>
+    <div>12</div>
+  </div>
+</div>
+<div id="LAB2" class="tabcontent">
+
+</div>
+<div id="LAB3" class="tabcontent">
+
+</div>
+<div id="LAB4" class="tabcontent">
+
+</div>
+<div id="LAB5" class="tabcontent">
+
+</div>
+<div id="LAB6" class="tabcontent">
+
+</div>
+<script>
+function openPage(pageName,elmnt,color) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablink");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].style.backgroundColor = "";
+  }
+  document.getElementById(pageName).style.display = "block";
+  elmnt.style.backgroundColor = color;
+
+  //pageContent = "this is schedule for " + pageName;
+  //document.getElementById(pageName).innerHTML = pageContent
+}
+
+// Get the element with id="defaultOpen" and click on it
+document.getElementById("defaultOpen").click();
+</script>
 </body>
 </html>
