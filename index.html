@@ -9,6 +9,7 @@
 
 /* Set height of body and the document to 100% */
 body, html {
+  min-width: 1080px;
   height: 100%;
   margin: 0;
   font-family: Arial;
@@ -40,7 +41,8 @@ body, html {
   height: 100%;
 }
 
-#LAB1,#LAB2,#LAB3,#LAB4,#LAB5,#LAB6 {background-color: orange;}
+#LABX {background-color: orange;
+  min-width: 1080px;}
 
 .flex-container {
   display: flex;
@@ -50,13 +52,21 @@ body, html {
 .flex-container:first-child {
   background-color: navy;
 }
+.flex-container:first-child > div{
+  min-width: 80px;
+  height: 40px;
+  padding: 2px;
+  line-height: 40px;
+  font-size: 1.5em;
+  text-align: left;
+}
 .flex-container > div {
+  min-width: 80px;
   color: DodgerBlue;
   background-color: #f1f1f1;
   width: 200px;
   margin: 10px;
   text-align: center;
-  line-height: 75px;
   font-size: 14px;
 }
 </style>
@@ -68,21 +78,21 @@ body, html {
 <button class="tablink" onclick="openPage('LAB4', this, 'orange')">LAB4</button>
 <button class="tablink" onclick="openPage('LAB5', this, 'orange')">LAB5</button>
 <button class="tablink" onclick="openPage('LAB6', this, 'orange')">LAB6</button>
-<div id="LAB1" class="tabcontent">
+<div id="LABX" class="tabcontent">
   <div id="TIME" class="flex-container">
 		<div>Time</div>
-    <div>08~08:50</div>
-		<div>09~09:50</div>
-		<div>10~10:50</div>
-		<div>11~11:50</div>
-		<div>12~12:50</div>
-    <div>01~01:50</div>
-		<div>02~02:50</div>
-		<div>03~03:50</div>
-    <div>04~04:50</div>
-    <div>05~05:50</div>
-    <div>06~06:50</div>
-    <div>07~07:50</div>
+    <div>08 &rarr;</div>
+		<div>09 &rarr;</div>
+		<div>10 &rarr;</div>
+		<div>11 &rarr;</div>
+		<div>12 &rarr;</div>
+    <div>01 &rarr;</div>
+		<div>02 &rarr;</div>
+		<div>03 &rarr;</div>
+    <div>04 &rarr;</div>
+    <div>05 &rarr;</div>
+    <div>06 &rarr;</div>
+    <div>07 &rarr;</div>
 	</div>
   <div id="SUN" class="flex-container">
     <div>SUN</div>
@@ -160,23 +170,8 @@ body, html {
     <div>12</div>
   </div>
 </div>
-<div id="LAB2" class="tabcontent">
-
-</div>
-<div id="LAB3" class="tabcontent">
-
-</div>
-<div id="LAB4" class="tabcontent">
-
-</div>
-<div id="LAB5" class="tabcontent">
-
-</div>
-<div id="LAB6" class="tabcontent">
-
-</div>
 <script>
-function openPage(pageName,elmnt,color) {
+function openPage(lab,elmnt,color) {
   var i, tabcontent, tablinks;
   tabcontent = document.getElementsByClassName("tabcontent");
   for (i = 0; i < tabcontent.length; i++) {
@@ -186,13 +181,25 @@ function openPage(pageName,elmnt,color) {
   for (i = 0; i < tablinks.length; i++) {
     tablinks[i].style.backgroundColor = "";
   }
-  document.getElementById(pageName).style.display = "block";
+  document.getElementById("LABX").style.display = "block";
   elmnt.style.backgroundColor = color;
-
-  //pageContent = "this is schedule for " + pageName;
-  //document.getElementById(pageName).innerHTML = pageContent
+  creatSchedule(lab);
 }
 
+// Generate the Schedules
+function creatSchedule(labx){
+  var labDays = ["SUN","MON","TUE","WED","THU"];
+  for (j=0; j<=4; j++){
+    var childDivs = document.getElementById(labDays[j]).getElementsByTagName('div');
+    var childDiv = childDivs[0];
+    childDiv.innerHTML = labDays[j];
+    for( i=1; i< childDivs.length; i++ )
+    {
+      var childDiv = childDivs[i];
+      childDiv.innerHTML = "Statistics<br><b>441</b><br>Prof.Emad<br>"+labx
+    }
+  }
+}
 // Get the element with id="defaultOpen" and click on it
 document.getElementById("defaultOpen").click();
 </script>
