@@ -1,6 +1,6 @@
 # Getting the data from process.html form then
 # inserting data in MongoDB labsDB database
-from flask import Flask, request, redirect, render_template
+
 from pymongo import MongoClient
 # connecting to the database (with auth user:Samy password:asd123)
 try:
@@ -52,6 +52,8 @@ cursor = collection.find()
 # for record in cursor:
 # 	print(record)
 
+#starting coding the Flask app
+from flask import Flask, request, redirect, render_template
 
 app = Flask(__name__) #create the Flask app
 
@@ -77,9 +79,13 @@ def process():
 def insert_lecture():
     # course = request.form('course')
     # print(course)
-    return '''<h1>Lecture submitted</h1>
-                  <a href="index.html">Home Page</a> |
-                  <a href="process.html">Add lecture</a>'''
+    return '''<html>
+              <body>
+              <h1>Lecture submitted</h1>
+                  <a href="/index">Home Page</a> |
+                  <a href="/cpanel">Add lecture</a>
+              </body>
+              </html>'''
 #run the flask app
 if __name__ == '__main__':
     app.run(debug=True,port=5000) #run app in debug mode on port 5000

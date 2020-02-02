@@ -185,7 +185,7 @@
   </head>
   <body>
     <div class="testbox">
-    <form action="{{ url_for('insert_lecture') }}">
+    <form action="{{ url_for('insert_lecture') }}" method="post">
       <div class="half-item">
         <p>Course</p>
         <input type="text" name="course"/>
@@ -206,43 +206,13 @@
         <p>Number of students</p>
         <input type="text" name="numberOfStudents"/>
       </div>
-      <div class="question">
-        <p>Days <span class="required">*</span></p>
-        <div class="question-answer checkbox-item">
-          <div>
-            <input type="checkbox" value="none" id="check_1" name="dayschecklist" required/>
-            <label for="check_1" class="check"><span>1 - Sunday</span></label>
-          </div>
-          <div>
-            <input type="checkbox" value="none" id="check_2" name="dayschecklist" required/>
-            <label for="check_2" class="check"><span>2 - Monday</span></label>
-          </div>
-          <div>
-            <input type="checkbox" value="none" id="check_3" name="dayschecklist" required/>
-            <label for="check_3" class="check"><span>3 - Tuesday</span></label>
-          </div>
-          <div>
-            <input type="checkbox" value="none" id="check_4" name="dayschecklist" required/>
-            <label for="check_4" class="check"><span>4 - Wednesday</span></label>
-          </div>
-          <div>
-            <input type="checkbox" value="none" id="check_5" name="dayschecklist" required/>
-            <label for="check_5" class="check"><span>5 - Thursday</span></label>
-          </div>
-        </div>
-        </div>
-      <div class="item">
-        <p>Location <span class="required">*</span></p>
-        <div class="item">
-          <select required>
-            <option value="1">lab 1</option>
-            <option value="2">lab 2</option>
-            <option value="3">lab 3</option>
-            <option value="4">lab 4</option>
-            <option value="5">lab 5</option>
-            <option value="6">lab 6</option>
-          </select>
-        </div>
+      <div class="half-item">
+        <p>days (eg, 135 or 24 or 3 )</p>
+        <input type="text" name="days"/>
+      </div>
+      <div class="half-item">
+        <p>Lab number (eg, 4)</p>
+        <input type="text" name="lab"/>
       </div>
         <div class="btn-block">
           <button type="submit">Add lecture</button>
