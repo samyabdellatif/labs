@@ -2,13 +2,11 @@
 <html>
   <head>
     <title>Stat Labs Admin</title>
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
     <style>
       html, body {
       min-height: 100%;
       }
-      body, div, form, input, select, textarea, p { 
+      body, div, form, input, select, textarea, p {
       padding: 0;
       margin: 0;
       outline: none;
@@ -44,7 +42,6 @@
       .banner {
       position: relative;
       height: 210px;
-      background-image: url("/uploads/media/default/0001/01/c43630149befa5c9559813f72e99bcb6bf149e62.jpeg");
       background-size: cover;
       display: flex;
       justify-content: center;
@@ -205,188 +202,64 @@
   <body>
     <div class="testbox">
     <form action="/">
-      <div class="banner">
-        <h1>Research Application Form</h1>
+      <div class="item">
+        <p>Course</p>
+        <input type="text" name="course"/>
       </div>
       <div class="item">
-        <p>Title of Research Proposal</p>
-        <input type="text" name="name"/>
+        <p>instructor</p>
+        <input type="text" name="instructor"/>
       </div>
       <div class="item">
-        <p>Date</p>
-        <input type="date" name="bdate" required/>
-        <i class="fas fa-calendar-alt"></i>
-      </div>
-      <h5>1. Principal Investigator:</h5>
-      <div class="item">
-        <p>Name and Credentials<span class="required">*</span></p>
-        <input type="text" name="name" required/>
+        <p>Starting time<span class="required">*</span></p>
+        <input type="text" name="starttime" required/>
       </div>
       <div class="item">
-        <p>Mailing Address<span class="required">*</span></p>
-        <input type="text" name="name" placeholder="Street address" required/>
-        <input type="text" name="name" placeholder="Street address line 2" required/>
-        <div class="city-item">
-          <input type="text" name="name" placeholder="City" required/>
-          <input type="text" name="name" placeholder="Region" required/>
-          <input type="text" name="name" placeholder="Postal / Zip code" required/>
-          <select required>
-            <option value="">Country</option>
-            <option value="1">Russia</option>
-            <option value="2">Germany</option>
-            <option value="3">France</option>
-            <option value="4">Armenia</option>
-            <option value="5">USA</option>
-          </select>
-        </div>
+        <p>Ending time</p>
+        <input type="text" name="endtime"/>
       </div>
       <div class="item">
-        <p>Phone<span class="required">*</span></p>
-        <input type="text" name="name" required/>
-      </div>
-      <div class="item">
-        <p>Fax</p>
-        <input type="text" name="name" />
-      </div>
-      <div class="item">
-        <p>Email<span class="required">*</span></p>
-        <input type="text" name="name" required/>
-      </div>
-      <h5>2. Co-Investigator:</h5>
-      <div class="item">
-        <p>Name and Credentials<span class="required">*</span></p>
-        <input type="text" name="name" required/>
-      </div>
-      <div class="item">
-        <p>Mailing Address<span class="required">*</span></p>
-        <input type="text" name="name" placeholder="Street address" required/>
-        <input type="text" name="name" placeholder="Street address line 2" required/>
-        <div class="city-item">
-          <input type="text" name="name" placeholder="City" required/>
-          <input type="text" name="name" placeholder="Region" required/>
-          <input type="text" name="name" placeholder="Postal / Zip code" required/>
-          <select required>
-            <option value="">Country</option>
-            <option value="1">Russia</option>
-            <option value="2">Germany</option>
-            <option value="3">France</option>
-            <option value="4">Armenia</option>
-            <option value="5">USA</option>
-          </select>
-        </div>
-      </div>
-      <div class="item">
-        <p>Phone<span class="required">*</span></p>
-        <input type="text" name="name" required/>
-      </div>
-      <div class="item">
-        <p>Fax</p>
-        <input type="text" name="name" />
-      </div>
-      <div class="item">
-        <p>Email<span class="required">*</span></p>
-        <input type="text" name="name" required/>
-      </div>
-      <h5>3. Institute Member</h5>
-      <div class="question">
-        <p>Principle investigator:<span class="required">*</span></p>
-        <div class="question-answer">
-          <input type="radio" value="none" id="radio_1" name="investigator" required/>
-          <label for="radio_1" class="radio"><span>Yes</span></label>
-          <input type="radio" value="none" id="radio_2" name="investigator" required/>
-          <label for="radio_2" class="radio"><span>No</span></label>
-        </div>
+        <p>Number of students</p>
+        <input type="text" name="numberOfStudents"/>
       </div>
       <div class="question">
-        <p>Co-Investigator:<span class="required">*</span></p>
-        <div class="question-answer">
-          <input type="radio" value="none" id="radio_3" name="co-investigator" required/>
-          <label for="radio_3" class="radio"><span>Yes</span></label>
-          <input type="radio" value="none" id="radio_4" name="co-investigator" required/>
-          <label for="radio_4" class="radio"><span>No</span></label>
-        </div>
-      </div>
-      <h5>4. Have you applied for or are you now receiving funding support for this research?</h5>
-      <div class="question">
-        <p><span class="required">*</span></p>
-        <div class="question-answer">
-          <input type="radio" value="none" id="radio_5" name="research" required/>
-          <label for="radio_5" class="radio"><span>Yes</span></label>
-          <input type="radio" value="none" id="radio_6" name="research" required/>
-          <label for="radio_6" class="radio"><span>No</span></label>
-        </div>
-      </div>
-      <h5>5. IRB:</h5>
-      <div class="question">
-        <p>Have you applied for IRB review:</p>
-        <div class="question-answer">
-          <input type="radio" value="none" id="radio_7" name="IRB"/>
-          <label for="radio_7" class="radio"><span>Yes</span></label>
-          <input type="radio" value="none" id="radio_8" name="IRB"/>
-          <label for="radio_8" class="radio"><span>No</span></label>
-        </div>
-      </div>
-      <h5>6. Students only:</h5>
-      <div class="item">
-        <p>Name of research advisor:</p>
-        <input type="text" name="name" />
-      </div>
-      <div class="item">
-        <p>Include a letter of support from advisor in application packet.<span class="required">*</span></p>
-        <textarea rows="3" required></textarea>
-      </div>
-      <div class="question">
-        <p>Research Application Checklist:<span class="required">*</span></p>
-        <small>Please include the following in your application.</small>
+        <p>Days<span class="required">*</span></p>
         <div class="question-answer checkbox-item">
           <div>
-            <input type="checkbox" value="none" id="check_1" name="checklist" required/>
-            <label for="check_1" class="check"><span>Proposal Cover Form</span></label>
+            <input type="checkbox" value="none" id="check_1" name="dayschecklist" required/>
+            <label for="check_1" class="check"><span>1 - Sunday</span></label>
           </div>
           <div>
-            <input type="checkbox" value="none" id="check_2" name="checklist" required/>
-            <label for="check_2" class="check"><span>Abstract</span></label>
+            <input type="checkbox" value="none" id="check_2" name="dayschecklist" required/>
+            <label for="check_2" class="check"><span>2 - Monday</span></label>
           </div>
           <div>
-            <input type="checkbox" value="none" id="check_3" name="checklist" required/>
-            <label for="check_3" class="check"><span>Narrative</span></label>
+            <input type="checkbox" value="none" id="check_3" name="dayschecklist" required/>
+            <label for="check_3" class="check"><span>3 - Tuesday</span></label>
           </div>
           <div>
-            <input type="checkbox" value="none" id="check_4" name="checklist" required/>
-            <label for="check_4" class="check"><span>Budget and Budget Justification</span></label>
+            <input type="checkbox" value="none" id="check_4" name="dayschecklist" required/>
+            <label for="check_4" class="check"><span>4 - Wednesday</span></label>
           </div>
           <div>
-            <input type="checkbox" value="none" id="check_5" name="checklist" required/>
-            <label for="check_5" class="check"><span>Timeframe</span></label>
-          </div>
-          <div>
-            <input type="checkbox" value="none" id="check_6" name="checklist" required/>
-            <label for="check_6" class="check"><span>References</span></label>
-          </div>
-          <div>
-            <input type="checkbox" value="none" id="check_7" name="checklist" required/>
-            <label for="check_7" class="check"><span>Appendices</span></label>
-          </div>
-          <div>
-            <input type="checkbox" value="none" id="check_8" name="checklist" required/>
-            <label for="check_8" class="check"><span>Bio Sketch</span></label>
-          </div>
-          </div
-        </div>
-        <br />
-        <div class="question">
-          <p>If funding is approved I agree to do the following:<span class="required">*</span></p>
-          <div class="question-answer checkbox-item">
-            <div>
-              <input type="checkbox" value="none" id="check_9" name="check" required/>
-              <label for="check_9" class="check"><span>I agree to the <a href="https://www.w3docs.com/privacy-policy">terms of service.</a></span></label>
-            </div>
+            <input type="checkbox" value="none" id="check_5" name="dayschecklist" required/>
+            <label for="check_5" class="check"><span>5 - Thursday</span></label>
           </div>
         </div>
-        <div class="item">
-          <p>Electronic signature<span class="required">*</span></p>
-          <textarea rows="3" required></textarea>
         </div>
+      <div class="item">
+        <p>Location<span class="required">*</span></p>
+        <div class="city-item">
+          <select required>
+            <option value="1">lab 1</option>
+            <option value="2">lab 2</option>
+            <option value="3">lab 3</option>
+            <option value="4">lab 4</option>
+            <option value="5">lab 5</option>
+            <option value="6">lab 6</option>
+          </select>
+        </div>
+      </div>
         <div class="btn-block">
           <button type="submit" href="/">Send Application</button>
         </div>
