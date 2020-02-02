@@ -1,0 +1,22 @@
+// Generate the Schedules js code
+function creatSchedule(labx){
+  var labDays = ["SUN","MON","TUE","WED","THU"];
+  for (j=0; j<=4; j++){
+    var childDivs = document.getElementById(labDays[j]).getElementsByTagName('div');
+    var childDiv = childDivs[0];
+    childDiv.innerHTML = labDays[j];
+    for( i=1; i< childDivs.length; i++ )
+    {
+      var childDiv = childDivs[i];
+      childDiv.innerHTML = "Statistics<br><b>441</b><br>Prof.Emad<br>"+labx
+    }
+  }
+}
+
+tabcontent = document.getElementsByClassName("tabcontent");
+for (i = 0; i < tabcontent.length; i++) {
+  tabcontent[i].style.display = "none";
+}
+
+
+document.getElementById("{{lab}}").style.display = "block";

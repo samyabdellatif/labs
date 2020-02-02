@@ -1,84 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Statistics Department Computer Labs Schedule</title>
-<style type="text/css">
-* {box-sizing: border-box}
-
-/* Set height of body and the document to 100% */
-body, html {
-  min-width: 1080px;
-  height: 100%;
-  margin: 0;
-  font-family: Arial;
-}
-
-/* Style tab links */
-.tablink {
-  background-color: #555;
-  color: white;
-  float: left;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  padding: 14px 16px;
-  font-size: 17px;
-  font-weight: bold;
-  width: 16.66666%;
-}
-
-.tablink:hover {
-  background-color: #777;
-}
-
-/* Style the tab content (and add height:100% for full page content) */
-.tabcontent {
-  color: white;
-  display: none;
-  padding: 100px 20px;
-  height: 100%;
-}
-
-#LABX {background-color: orange;
-  min-width: 1080px;}
-
-.flex-container {
-  display: flex;
-  flex-wrap: nowrap;
-  background-color: DodgerBlue;
-}
-.flex-container:first-child {
-  background-color: navy;
-}
-.flex-container:first-child > div{
-  min-width: 80px;
-  height: 40px;
-  padding: 2px;
-  line-height: 40px;
-  font-size: 1.5em;
-  text-align: left;
-}
-.flex-container > div {
-  min-width: 80px;
-  color: DodgerBlue;
-  background-color: #f1f1f1;
-  width: 200px;
-  margin: 10px;
-  text-align: center;
-  font-size: 14px;
-}
-</style>
-</head>
-<body>
-<button class="tablink" onclick="openPage('LAB1', this, 'orange')" id="defaultOpen">LAB1</button>
-<button class="tablink" onclick="openPage('LAB2', this, 'orange')">LAB2</button>
-<button class="tablink" onclick="openPage('LAB3', this, 'orange')">LAB3</button>
-<button class="tablink" onclick="openPage('LAB4', this, 'orange')">LAB4</button>
-<button class="tablink" onclick="openPage('LAB5', this, 'orange')">LAB5</button>
-<button class="tablink" onclick="openPage('LAB6', this, 'orange')">LAB6</button>
-<div id="LABX" class="tabcontent">
+{% extends "base.html" %}
+{% block labTable %}
+<div id="{{ lab }}" class="tabcontent">
   <div id="TIME" class="flex-container">
 		<div>Time</div>
     <div>08 &rarr;</div>
@@ -96,7 +18,7 @@ body, html {
 	</div>
   <div id="SUN" class="flex-container">
     <div>SUN</div>
-    <div>1</div>
+    <div>stat 101<br>Dr.Intesar</div>
 		<div>2</div>
 		<div>3</div>
 		<div>4</div>
@@ -170,38 +92,4 @@ body, html {
     <div>12</div>
   </div>
 </div>
-<script>
-function openPage(lab,elmnt,color) {
-  var i, tabcontent, tablinks;
-  tabcontent = document.getElementsByClassName("tabcontent");
-  for (i = 0; i < tabcontent.length; i++) {
-    tabcontent[i].style.display = "none";
-  }
-  tablinks = document.getElementsByClassName("tablink");
-  for (i = 0; i < tablinks.length; i++) {
-    tablinks[i].style.backgroundColor = "";
-  }
-  document.getElementById("LABX").style.display = "block";
-  elmnt.style.backgroundColor = color;
-  creatSchedule(lab);
-}
-
-// Generate the Schedules
-function creatSchedule(labx){
-  var labDays = ["SUN","MON","TUE","WED","THU"];
-  for (j=0; j<=4; j++){
-    var childDivs = document.getElementById(labDays[j]).getElementsByTagName('div');
-    var childDiv = childDivs[0];
-    childDiv.innerHTML = labDays[j];
-    for( i=1; i< childDivs.length; i++ )
-    {
-      var childDiv = childDivs[i];
-      childDiv.innerHTML = "Statistics<br><b>441</b><br>Prof.Emad<br>"+labx
-    }
-  }
-}
-// Get the element with id="defaultOpen" and click on it
-document.getElementById("defaultOpen").click();
-</script>
-</body>
-</html>
+{% endblock %}

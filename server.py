@@ -2,28 +2,6 @@
 # inserting data in MongoDB labsDB database
 from flask import Flask, request, redirect, render_template
 from pymongo import MongoClient
-
-app = Flask(__name__) #create the Flask app
-
-@app.route('/index')
-def index():
-    return render_template('index.html')
-
-@app.route('/process')
-def process():
-    return render_template('process.html')
-
-@app.route('/insert_lecture', methods=['GET', 'POST']) #allow both GET and POST requests
-def insert_lecture():
-    # course = request.form('course')
-    # print(course)
-    return '''<h1>Lecture submitted</h1>
-                  <a href="index.html">Home Page</a> |
-                  <a href="process.html">Add lecture</a>'''
-#run the flask app
-if __name__ == '__main__':
-    app.run(debug=True,port=5000) #run app in debug mode on port 5000
-
 # connecting to the database (with auth user:Samy password:asd123)
 try:
     client = MongoClient('mongodb://samy:asd123@localhost:27017/labsDB?authSource=labsDB')
@@ -71,5 +49,37 @@ collection = db.lectures
 
 # Printing the data inserted
 cursor = collection.find()
-for record in cursor:
-	print(record)
+# for record in cursor:
+# 	print(record)
+
+
+app = Flask(__name__) #create the Flask app
+
+@app.route('/',methods=['GET', 'POST'])
+@app.route('/index',methods=['GET', 'POST'])
+def index():
+    lab = request.args.get("lab")
+    if lab == None:
+        lab = "LAB1"
+    return render_template('index.html',lab=lab)
+
+@app.route('/test')
+def test():
+    user = {'username':'Samy','role':'admin'}
+    title = "this is a test for flask usage"
+    return render_template('testing.html',title=title,user=user,cursor=cursor)
+
+@app.route('/cpanel')
+def process():
+    return render_template('cpanel.html')
+
+@app.route('/insert_lecture', methods=['GET', 'POST']) #allow both GET and POST requests
+def insert_lecture():
+    # course = request.form('course')
+    # print(course)
+    return '''<h1>Lecture submitted</h1>
+                  <a href="index.html">Home Page</a> |
+                  <a href="process.html">Add lecture</a>'''
+#run the flask app
+if __name__ == '__main__':
+    app.run(debug=True,port=5000) #run app in debug mode on port 5000

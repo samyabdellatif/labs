@@ -2,19 +2,18 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>this page is for testing scripts</title>
-  </head>
-  <body>
-    <div id="container" class="container_class">
-
-    </div>
-    <script type="text/javascript">
-
-      var myJSON = '{"name":"John", "age":31, "city":"New York"}';
-      var myObj = JSON.parse(myJSON);
-      myJSON = JSON.stringify(myObj);
-      localStorage.setItem("testJSON", myJSON);
-      document.getElementById("container").innerHTML = myObj.name;
-    </script>
-  </body>
-</html>
+        {% if title %}
+        <title>{{ title }} - StatLabs</title>
+        {% else %}
+        <title>Welcome to StatLabs</title>
+        {% endif %}
+    </head>
+    <body>
+        <h1>Hi, {{ user.username }}!</h1>
+        {% for record in cursor %}
+        <div><p>{{ record.course }} | <b>{{ record.instructor }}</b>
+          | {{ record.starttime }}
+          | {{ record.lab}}</p></div>
+        {% endfor %}
+    </body>
+    </html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Statistics Department Computer Labs Schedule</title>
+<style type="text/css">
+* {box-sizing: border-box}
+
+/* Set height of body and the document to 100% */
+body, html {
+  min-width: 1080px;
+  height: 100%;
+  margin: 0;
+  font-family: Arial;
+}
+
+/* Style tab links */
+.tablink {
+  background-color: #555;
+  color: white;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  font-size: 17px;
+  font-weight: bold;
+  width: 16.66666%;
+}
+
+.tablink:hover {
+  background-color: #777;
+}
+
+/* Style the tab content (and add height:100% for full page content) */
+.tabcontent {
+  color: white;
+  background:orange;
+  display: block;
+  padding: 100px 20px;
+  height: 100%;
+}
+
+#LABX {background-color: orange;
+  min-width: 1080px;}
+
+.flex-container {
+  display: flex;
+  flex-wrap: nowrap;
+  background-color: DodgerBlue;
+}
+.flex-container:first-child {
+  background-color: navy;
+}
+.flex-container:first-child > div{
+  min-width: 80px;
+  height: 40px;
+  padding: 2px;
+  line-height: 40px;
+  font-size: 1.5em;
+  text-align: left;
+}
+.flex-container > div {
+  min-width: 80px;
+  color: DodgerBlue;
+  background-color: #f1f1f1;
+  width: 200px;
+  margin: 10px;
+  text-align: center;
+  font-size: 14px;
+}
+</style>
+</head>
+<body>
+<button class="tablink" id="LAB1link" onclick="openPage('LAB1')">LAB1</button>
+<button class="tablink" id="LAB2link" onclick="openPage('LAB2')">LAB2</button>
+<button class="tablink" id="LAB3link" onclick="openPage('LAB3')">LAB3</button>
+<button class="tablink" id="LAB4link" onclick="openPage('LAB4')">LAB4</button>
+<button class="tablink" id="LAB5link" onclick="openPage('LAB5')">LAB5</button>
+<button class="tablink" id="LAB6link" onclick="openPage('LAB6')">LAB6</button>
+{% block labTable %}{% endblock %}
+<script>
+function openPage(lab) {
+  window.location.href = '/index?lab='+lab;
+  var i, tablinks;
+  tablinks = document.getElementsByClassName("tablink");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].style.backgroundColor = "";
+  }
+}
+document.getElementById("{{lab}}link").style.backgroundColor = 'orange';
+</script>
+</body>
+</html>
