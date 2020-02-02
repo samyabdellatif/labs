@@ -31,29 +31,22 @@ db = client.labsDB
 
 # convert into mongoDB document object
 collection = db.lectures
-# lecture = {
-#  	"course" : course,
-#  	"days" : days,
-#  	"starttime" : starttime,
-#  	"endtime" : endtime,
-#  	"numberOfStudents" : numberOfStudents,
-#  	"lab" : lab,
-#  	"instructor" : instructor
-#     }
-#
 
-# Insert Data
-#lecture_id = collection.insert_one(lecture)
-#
-# print("Data inserted successfully")
-
-# Printing the data inserted
+# load the full database into cursor
 cursor = collection.find()
 # for record in cursor:
 # 	print(record)
 
+#####################################
+######### GOODIES ###################
+#split a string into list of characters
+def split(word):
+    return [char for char in word]
+#####################################
+
 #starting coding the Flask app
 from flask import Flask, request, redirect, render_template
+
 
 app = Flask(__name__) #create the Flask app
 
@@ -67,6 +60,7 @@ def index():
 
 @app.route('/test')
 def test():
+    cursor = collection.find()
     user = {'username':'Samy','role':'admin'}
     title = "this is a test for flask usage"
     return render_template('testing.html',title=title,user=user,cursor=cursor)
@@ -77,11 +71,33 @@ def process():
 
 @app.route('/insert_lecture', methods=['GET', 'POST']) #allow both GET and POST requests
 def insert_lecture():
+    course = request.args.get("course")
+    days = request.args.get("days")
+    starttime = request.args.get("starttime")
+    endtime = request.args.get("endtime")
+    numberOfStudents = request.args.get("numberOfStudents")
+    lab = request.args.get("lab")
+    instructor = request.args.get("instructor")
+    # create lecture object
+    lecture = {
+    "course" : course,
+    "days" : days,
+    "starttime" : starttime,
+    "endtime" : endtime,
+    "numberOfStudents" : numberOfStudents,
+    "lab" : lab,
+    "instructor" : instructor
+    }
+
+    # Insert Data
+    lecture_id = collection.insert_one(lecture)
+    #
+    # print("Data inserted successfully")
     # course = request.form('course')
     # print(course)
     return '''<html>
               <body>
-              <h1>Lecture submitted</h1>
+              <h1>Lecture submitted with ID {{lecture_id}}</h1>
                   <a href="/index">Home Page</a> |
                   <a href="/cpanel">Add lecture</a>
               </body>

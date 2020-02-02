@@ -2,18 +2,18 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-        {% if title %}
-        <title>{{ title }} - StatLabs</title>
-        {% else %}
-        <title>Welcome to StatLabs</title>
-        {% endif %}
-    </head>
-    <body>
+    {% if title %}
+      <title>{{ title }} - StatLabs</title>
+    {% else %}
+      <title>Welcome to StatLabs</title>
+    {% endif %}
+  </head>
+  <body>
         <h1>Hi, {{ user.username }}!</h1>
         {% for record in cursor %}
-        <div><p>{{ record.course }} | <b>{{ record.instructor }}</b>
+          <div><p>{{ record.course }} | <b>{{ record.instructor }}</b>
           | {{ record.starttime }}
           | {{ record.lab}}</p></div>
         {% endfor %}
-    </body>
-    </html>
+  </body>
+</html>
