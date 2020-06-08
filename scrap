@@ -1,3 +1,4 @@
+//JS
 // Generate the Schedules js code
 function creatSchedule(labx){
   var labDays = ["SUN","MON","TUE","WED","THU"];
@@ -18,5 +19,23 @@ for (i = 0; i < tabcontent.length; i++) {
   tabcontent[i].style.display = "none";
 }
 
-
+//JS
 document.getElementById("{{lab}}").style.display = "block";
+
+//PY
+# get lecture input
+#course = input ("Course: ")
+
+# number of elemetns as input
+# n = int(input("number of days: "))
+# # iterating till the range
+# days = []
+# for i in range(0, n):
+#     num = int(input("Day"+str(i)+": "))
+#     days.append(num) # adding the day
+#
+# starttime = input ("Start Time (eg, 1:00): ")
+# endtime = input ("End Time (eg, 1:50): ")
+# numberOfStudents = input ("Number of Students: ")
+# lab = input ("Lab Number: ")
+# instructor = input ("instructor: ")

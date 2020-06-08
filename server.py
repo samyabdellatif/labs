@@ -12,23 +12,6 @@ except:
 # database
 db = client.labsDB
 
-# get lecture input
-#course = input ("Course: ")
-
-# number of elemetns as input
-# n = int(input("number of days: "))
-# # iterating till the range
-# days = []
-# for i in range(0, n):
-#     num = int(input("Day"+str(i)+": "))
-#     days.append(num) # adding the day
-#
-# starttime = input ("Start Time (eg, 1:00): ")
-# endtime = input ("End Time (eg, 1:50): ")
-# numberOfStudents = input ("Number of Students: ")
-# lab = input ("Lab Number: ")
-# instructor = input ("instructor: ")
-
 # convert into mongoDB document object
 collection = db.lectures
 
@@ -55,15 +38,16 @@ app = Flask(__name__) #create the Flask app
 def index():
     lab = request.args.get("lab")
     if lab == None:
-        lab = "LAB1"
+        lab = "1"
     return render_template('index.html',lab=lab)
 
-@app.route('/test')
+@app.route('/test',methods=['GET', 'POST'])
 def test():
-    cursor = collection.find()
+    labx = request.args.get("lab")
+    cursor = collection.find({"lab":str(labx)})
     user = {'username':'Samy','role':'admin'}
     title = "this is a test for flask usage"
-    return render_template('testing.html',title=title,user=user,cursor=cursor)
+    return render_template('testing.html',lab=labx,title=title,user=user,cursor=cursor)
 
 @app.route('/cpanel')
 def process():

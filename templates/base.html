@@ -73,12 +73,12 @@ body, html {
 </style>
 </head>
 <body>
-<button class="tablink" id="LAB1link" onclick="openPage('LAB1')">LAB1</button>
-<button class="tablink" id="LAB2link" onclick="openPage('LAB2')">LAB2</button>
-<button class="tablink" id="LAB3link" onclick="openPage('LAB3')">LAB3</button>
-<button class="tablink" id="LAB4link" onclick="openPage('LAB4')">LAB4</button>
-<button class="tablink" id="LAB5link" onclick="openPage('LAB5')">LAB5</button>
-<button class="tablink" id="LAB6link" onclick="openPage('LAB6')">LAB6</button>
+<button class="tablink" id="LAB1link" onclick="openPage('1')">LAB1</button>
+<button class="tablink" id="LAB2link" onclick="openPage('2')">LAB2</button>
+<button class="tablink" id="LAB3link" onclick="openPage('3')">LAB3</button>
+<button class="tablink" id="LAB4link" onclick="openPage('4')">LAB4</button>
+<button class="tablink" id="LAB5link" onclick="openPage('5')">LAB5</button>
+<button class="tablink" id="LAB6link" onclick="openPage('6')">LAB6</button>
 {% block labTable %}{% endblock %}
 <script>
 function openPage(lab) {
@@ -89,7 +89,7 @@ function openPage(lab) {
     tablinks[i].style.backgroundColor = "";
   }
 }
-document.getElementById("{{lab}}link").style.backgroundColor = 'orange';
+document.getElementById("LAB{{lab}}link").style.backgroundColor = 'orange';
 </script>
 </body>
 </html>
