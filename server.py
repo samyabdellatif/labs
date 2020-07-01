@@ -44,7 +44,8 @@ def index():
 @app.route('/test',methods=['GET', 'POST'])
 def test():
     labx = request.args.get("lab")
-    cursor = collection.find({"lab":str(labx)})
+    cursor = collection.find({"lab":str(labx)}) #get lab X
+    cursor.sort('starttime')  #sort by day then by start time
     user = {'username':'Samy','role':'admin'}
     title = "this is a test for flask usage"
     return render_template('testing.html',lab=labx,title=title,user=user,cursor=cursor)
