@@ -31,17 +31,17 @@ def split(word):
 from flask import Flask, request, redirect, render_template
 
 
-app = Flask(__name__) #create the Flask app
+labapp = Flask(__name__) #create the Flask app
 
-@app.route('/',methods=['GET', 'POST'])
-@app.route('/index',methods=['GET', 'POST'])
+@lapapp.route('/',methods=['GET', 'POST'])
+@labapp.route('/index',methods=['GET', 'POST'])
 def index():
     lab = request.args.get("lab")
     if lab == None:
         lab = "1"
     return render_template('index.html',lab=lab)
 
-@app.route('/test',methods=['GET', 'POST'])
+@labapp.route('/test',methods=['GET', 'POST'])
 def test():
     labx = request.args.get("lab")
     cursor = collection.find({"lab":str(labx)}) #get lab X
@@ -50,11 +50,11 @@ def test():
     title = "this is a test for flask usage"
     return render_template('testing.html',lab=labx,title=title,user=user,cursor=cursor)
 
-@app.route('/cpanel')
+@labapp.route('/cpanel')
 def process():
     return render_template('cpanel.html')
 
-@app.route('/insert_lecture', methods=['GET', 'POST']) #allow both GET and POST requests
+@labapp.route('/insert_lecture', methods=['GET', 'POST']) #allow both GET and POST requests
 def insert_lecture():
     course = request.args.get("course")
     days = request.args.get("days")
@@ -89,4 +89,4 @@ def insert_lecture():
               </html>'''
 #run the flask app
 if __name__ == '__main__':
-    app.run(debug=True,port=5000) #run app in debug mode on port 5000
+    labapp.run(debug=True,port=5000) #run app in debug mode on port 5000
