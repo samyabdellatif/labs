@@ -1,10 +1,19 @@
-# Getting the data from process.html form then
-# inserting data in MongoDB labsDB database
 
 from pymongo import MongoClient
+from flask import Flask, request, redirect, render_template
+
+# Getting the data from process.html form then
+# inserting data in MongoDB labsDB database
 # connecting to the database (with auth user:Samy password:asd123)
 try:
-    client = MongoClient('mongodb://samy:asd123@localhost:27017/labsDB?authSource=labsDB')
+    #client = MongoClient('mongodb://dbadmin:Roa@2016#@localhost:27017/labsDB?authSource=admin')
+ 
+    client = MongoClient(
+    host = 'localhost:27017', # <-- IP and port go here
+    serverSelectionTimeoutMS = 3000, # 3 second timeout
+    username="dbadmin",
+    password="Roa@2016#",
+    )
     print("Connected successfully!!!")
 except:
 	print("Could not connect to MongoDB")
@@ -28,12 +37,12 @@ def split(word):
 #####################################
 
 #starting coding the Flask app
-from flask import Flask, request, redirect, render_template
+
 
 
 labapp = Flask(__name__) #create the Flask app
 
-@lapapp.route('/',methods=['GET', 'POST'])
+@labapp.route('/',methods=['GET', 'POST'])
 @labapp.route('/index',methods=['GET', 'POST'])
 def index():
     lab = request.args.get("lab")
@@ -47,7 +56,7 @@ def test():
     cursor = collection.find({"lab":str(labx)}) #get lab X
     cursor.sort('starttime')  #sort by day then by start time
     user = {'username':'Samy','role':'admin'}
-    title = "this is a test for flask usage"
+    title = "this is lab " + labx + " schedule."
     return render_template('testing.html',lab=labx,title=title,user=user,cursor=cursor)
 
 @labapp.route('/cpanel')
