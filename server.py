@@ -1,4 +1,7 @@
-
+# This web app is build as a training on MONGO databases
+# and FLASK framework, it's completely free , you can edit and use the code
+# Creaded by Samy Abdellatif
+# import required packages
 from pymongo import MongoClient
 from flask import Flask, request, redirect, render_template
 
