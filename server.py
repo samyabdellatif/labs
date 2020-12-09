@@ -15,7 +15,7 @@ try:
     host = 'localhost:27017', # <-- IP and port go here
     serverSelectionTimeoutMS = 3000, # 3 second timeout
     username="dbadmin",
-    password="Roa@2016#",
+    password="Roa@2016#"
     )
     print("Connected successfully!!!")
 except:
