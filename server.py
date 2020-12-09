@@ -9,8 +9,6 @@ from flask import Flask, request, redirect, render_template
 # inserting data in MongoDB labsDB database
 # connecting to the database
 try:
-    #client = MongoClient('mongodb://dbadmin:Roa@2016#@localhost:27017/labsDB?authSource=admin')
- 
     client = MongoClient(
     host = 'localhost:27017', # <-- IP and port go here
     serverSelectionTimeoutMS = 3000, # 3 second timeout
