@@ -1,4 +1,4 @@
 {
     "python.linting.enabled": false,
-    "python.pythonPath": "/sbin/python"
+    "python.pythonPath": "/home/sam/Github/labs/venv/bin/python3.9"
 }
