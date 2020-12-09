@@ -7,7 +7,7 @@ from flask import Flask, request, redirect, render_template
 
 # Getting the data from process.html form then
 # inserting data in MongoDB labsDB database
-# connecting to the database (with auth user:Samy password:asd123)
+# connecting to the database
 try:
     #client = MongoClient('mongodb://dbadmin:Roa@2016#@localhost:27017/labsDB?authSource=admin')
  
