@@ -57,7 +57,7 @@ def test():
     cursor = collection.find({"lab":str(labx)}) #get lab X
     cursor.sort('starttime')  #sort by day then by start time
     user = {'username':'Samy','role':'admin'}
-    title = "this is lab " + labx + " schedule."
+    title = "Lab " + labx + " schedule."
     return render_template('testing.html',lab=labx,title=title,user=user,cursor=cursor)
 
 @labapp.route('/cpanel')
