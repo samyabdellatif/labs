@@ -87,12 +87,9 @@ def insert_lecture():
     # Insert Data
     lecture_id = collection.insert_one(lecture)
     #
-    # print("Data inserted successfully")
-    # course = request.form('course')
-    # print(course)
     return '''<html>
               <body>
-              <h1>Lecture submitted with ID {{lecture_id}}</h1>
+              <h1>Data inserted successfully</h1>
                   <a href="/index">Home Page</a> |
                   <a href="/cpanel">Add lecture</a>
               </body>
