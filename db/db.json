@@ -1,5 +1,0 @@
-{"_id":{"$oid":"5fbd38075d5aa96f5790f713"},"course":"102","days":"24","starttime":"10:30","endtime":"11:20","numberOfStudents":"30","lab":"2","instructor":"Dr Noriah Al Kandary"}
-{"_id":{"$oid":"5fbd38235d5aa96f5790f714"},"course":"101","days":"135","starttime":"09:00","endtime":"10:20","numberOfStudents":"23","lab":"5","instructor":"Dr Gamal Habib"}
-{"_id":{"$oid":"5fbd384b5d5aa96f5790f715"},"course":"240","days":"24","starttime":"09:00","endtime":"10:20","numberOfStudents":"15","lab":"1","instructor":"Dr Fatmah Alqallaf"}
-{"_id":{"$oid":"5fbd38825d5aa96f5790f716"},"course":"333","days":"24","starttime":"11:00","endtime":"11:50","numberOfStudents":"20","lab":"1","instructor":"Dr Dhaif"}
-{"_id":{"$oid":"5fbd38b25d5aa96f5790f717"},"course":"101","days":"24","starttime":"12:30","endtime":"13:50","numberOfStudents":"17","lab":"2","instructor":"Dr Lailah"}
