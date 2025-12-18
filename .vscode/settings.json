@@ -1,4 +1,9 @@
 {
     "python.linting.enabled": false,
-    "python.pythonPath": "/home/sam/.venv/venv_labs/bin/python3.9"
+    "python.pythonPath": "/home/sam/.venv/venv_labs/bin/python3.9",
+    "python.testing.pytestArgs": [
+        "__pycache__"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
 }

@@ -1,2 +1,4 @@
+pip-requirements
 flask
 pymongo
+python-dotenv

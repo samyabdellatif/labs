@@ -3,93 +3,17 @@
 <div id="LAB{{ lab }}" class="tabcontent">
   <div id="TIME" class="flex-container">
 		<div>Time</div>
-    <div>08 &rarr;</div>
-		<div>09 &rarr;</div>
-		<div>10 &rarr;</div>
-		<div>11 &rarr;</div>
-		<div>12 &rarr;</div>
-    <div>01 &rarr;</div>
-		<div>02 &rarr;</div>
-		<div>03 &rarr;</div>
-    <div>04 &rarr;</div>
-    <div>05 &rarr;</div>
-    <div>06 &rarr;</div>
-    <div>07 &rarr;</div>
+    {% for time in times %}
+		<div>{{ time }} &rarr;</div>
+    {% endfor %}
 	</div>
-  <div id="SUN" class="flex-container">
-    <div>SUN</div>
-    <div>stat 101<br>Dr.Intesar</div>
-		<div>2</div>
-		<div>3</div>
-		<div>4</div>
-		<div>5</div>
-    <div>6</div>
-		<div>7</div>
-		<div>8</div>
-    <div>9</div>
-    <div>10</div>
-    <div>11</div>
-    <div>12</div>
+  {% for day in days %}
+  <div id="{{ day }}" class="flex-container">
+    <div>{{ day }}</div>
+    {% for time in times %}
+    <div>{{ schedule[day][time] }}</div>
+    {% endfor %}
   </div>
-  <div id="MON" class="flex-container">
-    <div>MON</div>
-    <div>1</div>
-		<div>2</div>
-		<div>3</div>
-		<div>4</div>
-		<div>5</div>
-    <div>6</div>
-		<div>7</div>
-		<div>8</div>
-    <div>9</div>
-    <div>10</div>
-    <div>11</div>
-    <div>12</div>
-  </div>
-  <div id="TUE" class="flex-container">
-    <div>TUE</div>
-    <div>1</div>
-		<div>2</div>
-		<div>3</div>
-		<div>4</div>
-		<div>5</div>
-    <div>6</div>
-		<div>7</div>
-		<div>8</div>
-    <div>9</div>
-    <div>10</div>
-    <div>11</div>
-    <div>12</div>
-  </div>
-  <div id="WED" class="flex-container">
-    <div>WED</div>
-    <div>1</div>
-		<div>2</div>
-		<div>3</div>
-		<div>4</div>
-		<div>5</div>
-    <div>6</div>
-		<div>7</div>
-		<div>8</div>
-    <div>9</div>
-    <div>10</div>
-    <div>11</div>
-    <div>12</div>
-  </div>
-  <div id="THU" class="flex-container">
-    <div>THU</div>
-    <div>1</div>
-		<div>2</div>
-		<div>3</div>
-		<div>4</div>
-		<div>5</div>
-    <div>6</div>
-		<div>7</div>
-		<div>8</div>
-    <div>9</div>
-    <div>10</div>
-    <div>11</div>
-    <div>12</div>
-  </div>
+  {% endfor %}
 </div>
 {% endblock %}
