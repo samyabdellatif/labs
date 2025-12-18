@@ -42,6 +42,34 @@ cursor = collection.find()
 #split a string into list of characters
 def split(word):
     return [char for char in word]
+
+def has_conflict(new_lecture):
+    lab = new_lecture['lab']
+    days = new_lecture['days']
+    start = new_lecture['starttime']
+    end = new_lecture['endtime']
+    
+    # Convert start and end to minutes since midnight
+    start_min = int(start.split(':')[0]) * 60 + int(start.split(':')[1])
+    end_min = int(end.split(':')[0]) * 60 + int(end.split(':')[1])
+    
+    # Get existing lectures for this lab
+    existing = list(collection.find({"lab": lab}))
+    
+    for lec in existing:
+        lec_days = lec['days']
+        lec_start = lec['starttime']
+        lec_end = lec['endtime']
+        lec_start_min = int(lec_start.split(':')[0]) * 60 + int(lec_start.split(':')[1])
+        lec_end_min = int(lec_end.split(':')[0]) * 60 + int(lec_end.split(':')[1])
+        
+        # Check if days overlap
+        for d in days:
+            if d in lec_days:
+                # Same day, check time overlap
+                if start_min < lec_end_min and lec_start_min < end_min:
+                    return True
+    return False
 #####################################
 
 #starting coding the Flask app
@@ -139,6 +167,16 @@ def insert_lecture():
     "lab" : lab,
     "instructor" : instructor
     }
+
+    # Check for conflicts
+    if has_conflict(lecture):
+        return '''<html>
+                  <body>
+                  <h1>Conflict detected: Lab is not free during this time slot</h1>
+                      <a href="/index">Home Page</a> |
+                      <a href="/cpanel">Add lecture</a>
+                  </body>
+                  </html>'''
 
     # Insert Data
     lecture_id = collection.insert_one(lecture)
