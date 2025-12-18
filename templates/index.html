@@ -3,15 +3,15 @@
 <div id="LAB{{ lab }}" class="tabcontent">
   <div id="TIME" class="flex-container">
 		<div>Time</div>
-    {% for time in times %}
-		<div>{{ time }} &rarr;</div>
+    {% for display_time in display_times %}
+		<div>{{ display_time }}</div>
     {% endfor %}
 	</div>
   {% for day in days %}
   <div id="{{ day }}" class="flex-container">
     <div>{{ day }}</div>
-    {% for time in times %}
-    <div>{{ schedule[day][time] }}</div>
+    {% for i in range(display_times|length) %}
+    <div>{{ schedule[day][times[i]] }}</div>
     {% endfor %}
   </div>
   {% endfor %}

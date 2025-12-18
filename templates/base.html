@@ -84,27 +84,45 @@ body {
 .flex-container {
   display: flex;
   flex-wrap: nowrap;
-  background-color: DodgerBlue;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  margin-bottom: 5px;
+  gap: 3px;
 }
 .flex-container:first-child {
-  background-color: navy;
+  background-color: #333;
+  color: white;
+  font-weight: bold;
 }
 .flex-container:first-child > div{
   min-width: 80px;
-  height: 40px;
-  padding: 2px;
-  line-height: 40px;
-  font-size: 1.5em;
-  text-align: left;
+  height: 45px;
+  padding: 8px;
+  line-height: 25px;
+  font-size: 0.9em;
+  text-align: center;
+  border-right: 1px solid #555;
+}
+.flex-container:first-child > div:last-child {
+  border-right: none;
 }
 .flex-container > div {
   min-width: 80px;
-  color: DodgerBlue;
-  background-color: #f1f1f1;
+  color: #333;
+  background-color: #fff;
   width: 200px;
-  margin: 10px;
+  margin: 0;
   text-align: center;
   font-size: 14px;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+  box-sizing: border-box;
+}
+.flex-container > div:last-child {
+  border-right: none;
+}
+.flex-container:nth-child(even) {
+  background-color: #f2f2f2;
 }
 
 /* About page styles */

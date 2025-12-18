@@ -44,32 +44,37 @@ def split(word):
     return [char for char in word]
 
 def has_conflict(new_lecture):
+    """
+    Check if the new lecture conflicts with existing lectures in the same lab.
+    A conflict occurs if there's any overlap in days and time slots.
+    """
     lab = new_lecture['lab']
     days = new_lecture['days']
     start = new_lecture['starttime']
     end = new_lecture['endtime']
     
-    # Convert start and end to minutes since midnight
+    # Convert start and end times to minutes since midnight for easy comparison
     start_min = int(start.split(':')[0]) * 60 + int(start.split(':')[1])
     end_min = int(end.split(':')[0]) * 60 + int(end.split(':')[1])
     
-    # Get existing lectures for this lab
+    # Retrieve all existing lectures for the specified lab
     existing = list(collection.find({"lab": lab}))
     
     for lec in existing:
         lec_days = lec['days']
         lec_start = lec['starttime']
         lec_end = lec['endtime']
+        # Convert existing lecture times to minutes
         lec_start_min = int(lec_start.split(':')[0]) * 60 + int(lec_start.split(':')[1])
         lec_end_min = int(lec_end.split(':')[0]) * 60 + int(lec_end.split(':')[1])
         
-        # Check if days overlap
+        # Check for overlapping days
         for d in days:
             if d in lec_days:
-                # Same day, check time overlap
+                # Check for time overlap on the same day
                 if start_min < lec_end_min and lec_start_min < end_min:
-                    return True
-    return False
+                    return True  # Conflict detected
+    return False  # No conflict
 #####################################
 
 #starting coding the Flask app
@@ -81,39 +86,48 @@ labapp = Flask(__name__) #create the Flask app
 @labapp.route('/',methods=['GET', 'POST'])
 @labapp.route('/index',methods=['GET', 'POST'])
 def index():
+    """
+    Main index route that displays the lab schedule.
+    Retrieves the lab number from query parameters, fetches lectures,
+    and builds a schedule grid for display.
+    """
     lab = request.args.get("lab")
     if lab == None:
-        lab = "1"
+        lab = "1"  # Default to lab 1 if not specified
     
-    # Fetch lectures for this lab
+    # Fetch all lectures for the selected lab from MongoDB
     lectures = list(collection.find({"lab": lab}))
     
-    # Define days and times
+    # Define the days of the week and their mappings
     days = ['SUN', 'MON', 'TUE', 'WED', 'THU']
     day_map = {'1': 'SUN', '2': 'MON', '3': 'TUE', '4': 'WED', '5': 'THU'}
+    # Time slots in 24-hour format (internal keys)
     times = ['08', '09', '10', '11', '12', '01', '02', '03', '04', '05', '06', '07']
+    # Display times in 12-hour format with AM/PM
+    display_times = ['8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM', '6:00 PM', '7:00 PM']
     
-    # Initialize schedule
+    # Initialize an empty schedule grid
     schedule = {day: {time: '' for time in times} for day in days}
     
-    # Populate schedule
+    # Populate the schedule with lecture data
     for lecture in lectures:
         course = lecture.get('course', '')
         instructor = lecture.get('instructor', '')
-        days_str = lecture.get('days', '')
+        days_str = lecture.get('days', '')  # String of day codes (e.g., '123' for SUN,MON,TUE)
         starttime = lecture.get('starttime', '00:00')
         endtime = lecture.get('endtime', '00:00')
         
+        # Extract hour from time strings
         start_hour = int(starttime.split(':')[0])
         end_hour = int(endtime.split(':')[0])
         
-        # Convert to 24-hour format if needed
+        # Convert 12-hour format to 24-hour if necessary (assuming times before 8 are PM)
         if start_hour < 8:
             start_hour += 12
         if end_hour < 8:
             end_hour += 12
         
-        # Generate time slots
+        # Generate the list of time slots covered by this lecture
         time_slots = []
         for h in range(start_hour, end_hour):
             if h <= 12:
@@ -121,7 +135,7 @@ def index():
             else:
                 time_slots.append(f"{h-12:02d}")
         
-        # Assign to days
+        # Assign the lecture to the appropriate days and time slots in the schedule
         for d in days_str:
             day_name = day_map.get(d)
             if day_name and day_name in days:
@@ -129,10 +143,15 @@ def index():
                     if t in times:
                         schedule[day_name][t] = f"{course} - {instructor}"
     
-    return render_template('index.html', lab=lab, days=days, times=times, schedule=schedule, show_lab_tabs=True)
+    # Render the index template with the populated schedule
+    return render_template('index.html', lab=lab, days=days, times=times, display_times=display_times, schedule=schedule, show_lab_tabs=True)
 
 @labapp.route('/test',methods=['GET', 'POST'])
 def test():
+    """
+    Test route to display lectures for a specific lab in a simple list format.
+    Used for debugging or alternative viewing.
+    """
     labx = request.args.get("lab")
     cursor = collection.find({"lab":str(labx)}) #get lab X
     cursor.sort('starttime')  #sort by day then by start time
@@ -142,23 +161,34 @@ def test():
 
 @labapp.route('/cpanel')
 def process():
+    """
+    Route for the control panel page where users can add new lectures.
+    """
     return render_template('cpanel.html', show_lab_tabs=False)
 
 @labapp.route('/about')
 def about():
+    """
+    Route for the about page with information about the application.
+    """
     return render_template('about.html', show_lab_tabs=False)
 
 @labapp.route('/insert_lecture', methods=['GET', 'POST']) #allow both GET and POST requests
 def insert_lecture():
+    """
+    Route to insert a new lecture into the database.
+    Retrieves form data, checks for conflicts, and inserts if no conflicts exist.
+    """
     course = request.args.get("course")
-    days_list = request.args.getlist("days")
-    days = ''.join(sorted(days_list))
+    days_list = request.args.getlist("days")  # Get list of selected days from checkboxes
+    days = ''.join(sorted(days_list))  # Sort and join into a string (e.g., '135')
     starttime = request.args.get("starttime")
     endtime = request.args.get("endtime")
     numberOfStudents = request.args.get("numberOfStudents")
     lab = request.args.get("lab")
     instructor = request.args.get("instructor")
-    # create lecture object
+    
+    # Create lecture object from form data
     lecture = {
     "course" : course,
     "days" : days,
@@ -169,7 +199,7 @@ def insert_lecture():
     "instructor" : instructor
     }
 
-    # Check for conflicts
+    # Check for scheduling conflicts before inserting
     if has_conflict(lecture):
         return '''<html>
                   <body>
@@ -179,9 +209,10 @@ def insert_lecture():
                   </body>
                   </html>'''
 
-    # Insert Data
+    # Insert the lecture into the database
     lecture_id = collection.insert_one(lecture)
-    #
+    
+    # Return success message
     return '''<html>
               <body>
               <h1>Data inserted successfully</h1>
@@ -189,6 +220,6 @@ def insert_lecture():
                   <a href="/cpanel">Add lecture</a>
               </body>
               </html>'''
-#run the flask app
+# Run the Flask application
 if __name__ == '__main__':
-    labapp.run(debug=True,port=5000) #run app in debug mode on port 5000
+    labapp.run(debug=True, port=5000)  # Run app in debug mode on port 5000
