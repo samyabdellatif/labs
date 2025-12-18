@@ -151,7 +151,8 @@ def about():
 @labapp.route('/insert_lecture', methods=['GET', 'POST']) #allow both GET and POST requests
 def insert_lecture():
     course = request.args.get("course")
-    days = request.args.get("days")
+    days_list = request.args.getlist("days")
+    days = ''.join(sorted(days_list))
     starttime = request.args.get("starttime")
     endtime = request.args.get("endtime")
     numberOfStudents = request.args.get("numberOfStudents")
