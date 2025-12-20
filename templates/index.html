@@ -25,7 +25,7 @@
 </div>
 
 <script>
-const IS_LOGGED_IN = {{ (session.get('user') is not none)|tojson }};
+const IS_LOGGED_IN = {% if session.get('user') %}true{% else %}false{% endif %};
 // helper to convert time key like '08' to '08:00'
 function timeKeyToHHMM(key){
   return key + ':00';
