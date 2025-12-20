@@ -394,11 +394,23 @@ def login():
     username = request.form.get('username')
     password = request.form.get('password')
     next_url = request.args.get('next') or request.form.get('next') or url_for('index')
+    """
     if username == 'admin' and password == 'password':
         session['user'] = username
         return redirect(next_url)
     # auth failed
-    return render_template('login.html', show_lab_tabs=False, error='Invalid credentials')
+        return render_template('login.html', show_lab_tabs=False, error='Invalid credentials')
+    """
+    user_found = db.users.find_one({"username": username})
+
+    if user_found:
+        # 2. Get the stored password (assuming it's stored as string)
+        password_from_db = user_found.get('password')
+        if password_from_db == password:
+            session['user'] = username
+            return redirect(next_url) # "Login successful!"
+        else:
+            return render_template('login.html', show_lab_tabs=False, error='Invalid credentials')
 
 
 @labapp.route('/logout')
