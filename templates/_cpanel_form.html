@@ -1,0 +1,237 @@
+  <style>
+    /* Scoped styles for the cpanel form to avoid global resets */
+    .cpanel-fragment { min-height: 100%; }
+    .cpanel-fragment, .cpanel-fragment div, .cpanel-fragment form, .cpanel-fragment input, .cpanel-fragment select, .cpanel-fragment textarea, .cpanel-fragment p {
+      outline: none;
+      font-family: Roboto, Arial, sans-serif;
+      font-size: 14px;
+      color: #666;
+      line-height: 22px;
+    }
+    h1 {
+    position: absolute;
+    margin: 0;
+    font-size: 32px;
+    color: #fff;
+    z-index: 2;
+    }
+    h5 {
+    margin: 10px 0;
+    }
+    .testbox {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: inherit;
+    padding: 20px;
+    }
+    form.cpanel-form {
+    width: 100%;
+    padding: 20px;
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: 0 0 20px 0 #095484;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    }
+    input, select, textarea {
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    }
+    input {
+    width: 100%;
+    padding: 5px;
+    }
+    select {
+    width: 100%;
+    padding: 7px 0;
+    background: transparent;
+    }
+    textarea {
+    width: calc(100% - 12px);
+    padding: 5px;
+    }
+    .item:hover p, .item:hover i, .question:hover p, .question label:hover, input:hover::placeholder, a {
+    color: #095484;
+    }
+    .item input:hover, .item select:hover, .item textarea:hover {
+    border: 1px solid transparent;
+    box-shadow: 0 0 6px 0 #095484;
+    color: #095484;
+    }
+    .item {
+    position: relative;
+    margin: 10px 0;
+    }
+    input[type="date"]::-webkit-inner-spin-button {
+    display: none;
+    }
+    .item i, input[type="date"]::-webkit-calendar-picker-indicator {
+    position: absolute;
+    font-size: 20px;
+    color: #a9a9a9;
+    }
+    .item i {
+    right: 2%;
+    top: 30px;
+    z-index: 1;
+    }
+    [type="date"]::-webkit-calendar-picker-indicator {
+    right: 1%;
+    z-index: 2;
+    opacity: 0;
+    cursor: pointer;
+    }
+    input[type=radio], input[type=checkbox]  {
+    display: none;
+    }
+    label.radio, label.check {
+    position: relative;
+    display: inline-block;
+    margin: 5px 20px 15px 0;
+    cursor: pointer;
+    }
+    .question span {
+    margin-left: 30px;
+    }
+    span.required {
+    margin-left: 0;
+    color: red;
+    }
+    .checkbox-item label {
+    margin: 5px 20px 10px 0;
+    padding-left: 20px;
+    }
+    .form-group {
+    display: flex;
+    flex-direction: column;
+    }
+    .checkbox-item {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    }
+    label.radio:before, label.check:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    }
+    label.radio:before {
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    border: 2px solid #095484;
+    }
+    label.check:before {
+    top: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 2px;
+    border: 1px solid #095484;
+    }
+    input[type=checkbox]:checked + .check:before {
+    background: #095484;
+    }
+    label.radio:after {
+    left: 5px;
+    border: 3px solid #095484;
+    }
+    label.check:after {
+    left: 4px;
+    border: 3px solid #fff;
+    }
+    label.radio:after, label.check:after {
+    content: "";
+    position: absolute;
+    top: 6px;
+    width: 8px;
+    height: 4px;
+    background: transparent;
+    border-top: none;
+    border-right: none;
+    transform: rotate(-45deg);
+    opacity: 0;
+    }
+    input[type=radio]:checked + label:after, input[type=checkbox]:checked + label:after {
+    opacity: 1;
+    }
+    .btn-block {
+    margin-top: 10px;
+    text-align: center;
+    grid-column: 1 / -1;
+    }
+    button {
+    width: 150px;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background: #095484;
+    font-size: 16px;
+    color: #fff;
+    cursor: pointer;
+    }
+    button:hover {
+    background: #0666a3;
+    }
+    @media (min-width: 568px) {
+    }
+  </style>
+
+  <div class="cpanel-fragment">
+    <div class="testbox">
+    <form id="cpanel-form" class="cpanel-form" action="/insert_lecture" method="GET">
+      <input type="hidden" name="id" id="lecture-id" value="" />
+      <div class="form-group">
+        <p>Course</p>
+        <input type="text" name="course" id="course"/>
+      </div>
+      <div class="form-group">
+        <p>instructor <span class="required">*</span></p>
+        <input type="text" name="instructor" id="instructor" />
+      </div>
+      <div class="form-group">
+        <p>Starting time <span class="required">*</span></p>
+        <input type="time" name="starttime" id="starttime" required/>
+      </div>
+      <div class="form-group">
+        <p>Ending time</p>
+        <input type="time" name="endtime" id="endtime"/>
+      </div>
+      <div class="form-group">
+        <p>Number of students</p>
+        <input type="text" name="numberOfStudents" id="numberOfStudents"/>
+      </div>
+      <div class="form-group">
+        <p>Days</p>
+        <div class="checkbox-item" id="days-checkboxes">
+          <input type="checkbox" id="sun" name="days" value="1"/>
+          <label for="sun" class="check">SUN</label>
+          <input type="checkbox" id="mon" name="days" value="2"/>
+          <label for="mon" class="check">MON</label>
+          <input type="checkbox" id="tue" name="days" value="3"/>
+          <label for="tue" class="check">TUE</label>
+          <input type="checkbox" id="wed" name="days" value="4"/>
+          <label for="wed" class="check">WED</label>
+          <input type="checkbox" id="thu" name="days" value="5"/>
+          <label for="thu" class="check">THU</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <p>Lab number</p>
+        <select name="lab" id="lab-select">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+        </select>
+      </div>
+        <div class="btn-block">
+          <button type="submit" id="cpanel-submit">Save lecture</button>
+        </div>
+    </form>
+    </div>
+  </div>

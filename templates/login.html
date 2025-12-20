@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block labTable %}
+  <div class="container">
+    <h2>Login</h2>
+    <form action="/login" method="POST" style="max-width:400px;margin:0 auto;">
+      <div style="margin-bottom:10px;">
+        <label>Username</label>
+        <input type="text" name="username" style="width:100%;padding:8px;" />
+      </div>
+      <div style="margin-bottom:10px;">
+        <label>Password</label>
+        <input type="password" name="password" style="width:100%;padding:8px;" />
+      </div>
+      <div style="text-align:center;">
+        <button type="submit">Login</button>
+      </div>
+    </form>
+  </div>
+{% endblock %}

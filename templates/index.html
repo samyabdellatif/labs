@@ -11,9 +11,98 @@
   <div id="{{ day }}" class="flex-container">
     <div>{{ day }}</div>
     {% for i in range(display_times|length) %}
-    <div>{{ schedule[day][times[i]] }}</div>
+    <div class="cell" data-day="{{ day }}" data-time="{{ times[i] }}" data-lab="{{ lab }}">{{ schedule[day][times[i]] }}</div>
     {% endfor %}
   </div>
   {% endfor %}
 </div>
+<!-- Modal for cpanel form -->
+<div id="cpanel-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
+  <div style="background:#fff; max-width:900px; width:95%; margin:auto; padding:10px; border-radius:6px; position:relative;">
+    <button id="cpanel-close" style="position:absolute; right:10px; top:10px;">Close</button>
+    {% include "_cpanel_form.html" %}
+  </div>
+</div>
+
+<script>
+const IS_LOGGED_IN = {{ (session.get('user') is not none)|tojson }};
+// helper to convert time key like '08' to '08:00'
+function timeKeyToHHMM(key){
+  return key + ':00';
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  // attach click to every cell only if user is logged in
+  document.querySelectorAll('.cell').forEach(function(el){
+    if(IS_LOGGED_IN){
+      el.style.cursor = 'pointer';
+      el.addEventListener('click', async function(){
+        // (existing handler)
+      const day = this.dataset.day;
+      const time = this.dataset.time; // e.g. '08'
+      const lab = this.dataset.lab;
+      // open modal
+      const modal = document.getElementById('cpanel-modal');
+      modal.style.display = 'flex';
+      // prepare form
+      const form = document.getElementById('cpanel-form');
+      form.action = '/insert_lecture';
+      document.getElementById('lecture-id').value = '';
+      // prefill lab and time
+      document.getElementById('lab-select').value = lab;
+      document.getElementById('starttime').value = timeKeyToHHMM(time);
+      document.getElementById('endtime').value = '';
+      document.getElementById('course').value = '';
+      document.getElementById('instructor').value = '';
+      document.getElementById('numberOfStudents').value = '';
+      // clear days
+      ['sun','mon','tue','wed','thu'].forEach(function(id){
+        const cb = document.getElementById(id);
+        if(cb) cb.checked = false;
+      });
+
+      // try to fetch existing lecture covering this slot
+      try{
+        const resp = await fetch(`/get_lecture?lab=${encodeURIComponent(lab)}&day=${encodeURIComponent(day)}&time=${encodeURIComponent(time)}`);
+        if(resp.ok){
+          const data = await resp.json();
+          if(data && data._id){
+            // fill form for editing
+            document.getElementById('lecture-id').value = data._id;
+            document.getElementById('course').value = data.course || '';
+            document.getElementById('instructor').value = data.instructor || '';
+            document.getElementById('starttime').value = data.starttime || '';
+            document.getElementById('endtime').value = data.endtime || '';
+            document.getElementById('numberOfStudents').value = data.numberOfStudents || '';
+            document.getElementById('lab-select').value = data.lab || lab;
+            // set days
+            if(data.days){
+              // data.days is string like '13'
+              const map = {'1':'sun','2':'mon','3':'tue','4':'wed','5':'thu'};
+              for(const ch of data.days){
+                const el = document.getElementById(map[ch]);
+                if(el) el.checked = true;
+              }
+            }
+            // change form action to update
+            form.action = '/update_lecture';
+          }
+        }
+      }catch(e){
+        console.error('Could not fetch lecture:', e);
+      }
+      });
+    }else{
+      // not logged in: visually indicate non-editable
+      el.style.cursor = 'default';
+      el.title = 'Login to edit';
+    }
+  });
+
+  // close button
+  document.getElementById('cpanel-close').addEventListener('click', function(){
+    document.getElementById('cpanel-modal').style.display = 'none';
+  });
+});
+</script>
 {% endblock %}
