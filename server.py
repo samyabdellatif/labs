@@ -58,9 +58,6 @@ cursor = collection.find()
 
 #####################################
 ######### GOODIES ###################
-#split a string into list of characters
-def split(word):
-    return [char for char in word]
 
 def has_conflict(new_lecture):
     """
@@ -184,19 +181,6 @@ def index():
     # Render the index template with the populated schedule
     is_logged_in = bool(session.get('user'))
     return render_template('index.html', lab=lab, days=days, times=times, display_times=display_times, schedule=schedule, show_lab_tabs=True, is_logged_in=is_logged_in)
-
-@labapp.route('/test',methods=['GET', 'POST'])
-def test():
-    """
-    Test route to display lectures for a specific lab in a simple list format.
-    Used for debugging or alternative viewing.
-    """
-    labx = request.args.get("lab")
-    cursor = collection.find({"lab":str(labx)}) #get lab X
-    cursor.sort('starttime')  #sort by day then by start time
-    user = {'username':'Samy','role':'admin'}
-    title = "Lab " + str(labx) + " schedule."
-    return render_template('testing.html',lab=labx,title=title,user=user,cursor=cursor)
 
 @labapp.route('/cpanel')
 def process():
@@ -386,7 +370,6 @@ def about():
 
 @labapp.route('/login', methods=['GET', 'POST'])
 def login():
-    """Simple login using hardcoded credentials 'admin' / 'password'."""
     if request.method == 'GET':
         return render_template('login.html', show_lab_tabs=False)
 
@@ -394,13 +377,6 @@ def login():
     username = request.form.get('username')
     password = request.form.get('password')
     next_url = request.args.get('next') or request.form.get('next') or url_for('index')
-    """
-    if username == 'admin' and password == 'password':
-        session['user'] = username
-        return redirect(next_url)
-    # auth failed
-        return render_template('login.html', show_lab_tabs=False, error='Invalid credentials')
-    """
     user_found = db.users.find_one({"username": username})
 
     if user_found:
@@ -482,14 +458,9 @@ def insert_lecture():
         lecture_out['_id'] = str(result.inserted_id)
         return jsonify({'success': True, 'lecture': lecture_out})
 
-    # Fallback: Return success page
-    return '''<html>
-              <body>
-              <h1>Data inserted successfully</h1>
-                  <a href="/index">Home Page</a> |
-                  <a href="/cpanel">Add lecture</a>
-              </body>
-              </html>'''
+    # Redirect to the index page for the same lab where the lecture was inserted
+    target_lab = lab if lab else '1'
+    return redirect(f"/index?lab={target_lab}")
 # Run the Flask application
 if __name__ == '__main__':
     labapp.run(debug=True, port=5000)  # Run app in debug mode on port 5000
