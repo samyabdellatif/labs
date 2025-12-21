@@ -377,6 +377,11 @@ def login():
     username = request.form.get('username')
     password = request.form.get('password')
     next_url = request.args.get('next') or request.form.get('next') or url_for('index')
+    
+    # Validate input fields
+    if not username or not password:
+        return render_template('login.html', show_lab_tabs=False, error='Please enter both username and password')
+    
     user_found = db.users.find_one({"username": username})
 
     if user_found:
@@ -386,7 +391,9 @@ def login():
             session['user'] = username
             return redirect(next_url) # "Login successful!"
         else:
-            return render_template('login.html', show_lab_tabs=False, error='Invalid credentials')
+            return render_template('login.html', show_lab_tabs=False, error='Incorrect password. Please try again.')
+    else:
+        return render_template('login.html', show_lab_tabs=False, error='User not found. Please check your username.')
 
 
 @labapp.route('/logout')
