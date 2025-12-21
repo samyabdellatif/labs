@@ -42,6 +42,21 @@ labs/
     <li><strong>lectures</strong>: Schedule data (course, instructor, days, times, lab)</li>
   </ul>
   
+  <h2>Setup Instructions</h2>
+  <p><strong>To run this project locally:</strong></p>
+  <ol style="line-height: 1.8; color: #555;">
+    <li>Clone the repository: <code>git clone [repository-url]</code></li>
+    <li>Create virtual environment: <code>python -m venv venv</code></li>
+    <li>Activate environment:
+      <br><code>venv\Scripts\activate</code> (Windows)
+      <br><code>source venv/bin/activate</code> (macOS/Linux)</li>
+    <li>Install dependencies: <code>pip install -r requirements.txt</code></li>
+    <li>Copy <code>.env.example</code> to <code>.env</code> and configure your MongoDB connection</li>
+    <li>Run the application: <code>python server.py</code></li>
+    <li>Access at <code>http://127.0.0.1:5000</code></li>
+  </ol>
+  <p><em>Default login: username <code>admin</code>, password <code>password</code></em></p>
+  
   <h2>Author</h2>
   <p><strong>Samy Abdellatif</strong></p>
   <p>A training project demonstrating modern web development practices.</p>
