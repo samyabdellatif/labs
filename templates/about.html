@@ -1,13 +1,125 @@
 {% extends "base.html" %}
 {% block labTable %}
 <div class="container">
-  <h1>About This Project</h1>
-  <p>This project was created for <span class="highlight">learning and testing purposes</span>.</p>
-  <p>Covered in this project:</p>
+  <h1>Laboratory Schedule Management System</h1>
+  <p>A comprehensive web application for managing laboratory schedules and lecture bookings, designed as a training project for modern web development technologies.</p>
+  
+  <h2>🎯 Project Overview</h2>
+  <p>This system provides an intuitive interface for managing laboratory schedules across multiple labs, allowing administrators to add, update, and view lecture schedules with conflict detection and user authentication.</p>
+  
+  <h2>🛠️ Technologies & Frameworks</h2>
+  
+  <h3>Backend Technologies</h3>
   <ul>
-    <li><span class="highlight">Python + Flask + MongoDB</span></li>
-    <li>Using Python as backend to fetch and update data on MongoDB database hosted on MongoDB cloud cluster</li>
-    <li>Using Flask framework to format the design and fill it with the data provided by Python</li>
+    <li><strong>Python 3.13</strong> - Core programming language</li>
+    <li><strong>Flask Framework</strong> - Web framework for routing and request handling</li>
+    <li><strong>MongoDB</strong> - NoSQL database for data storage</li>
+    <li><strong>PyMongo</strong> - Python driver for MongoDB integration</li>
+    <li><strong>python-dotenv</strong> - Environment variable management</li>
+    <li><strong>BSON (PyMongo)</strong> - Binary JSON format for MongoDB ObjectId handling</li>
   </ul>
+  
+  <h3>Frontend Technologies</h3>
+  <ul>
+    <li><strong>HTML5</strong> - Semantic markup and structure</li>
+    <li><strong>CSS3</strong> - Styling with flexbox layouts and responsive design</li>
+    <li><strong>JavaScript (ES6+)</strong> - Client-side interactivity and AJAX requests</li>
+    <li><strong>Fetch API</strong> - Modern AJAX for asynchronous operations</li>
+    <li><strong>DOM Manipulation</strong> - Dynamic content updates without page refresh</li>
+  </ul>
+  
+  <h2>🏗️ System Architecture</h2>
+  
+  <h3>Backend Components</h3>
+  <ul>
+    <li><strong>RESTful API Design</strong> - Clean URL structure with proper HTTP methods</li>
+    <li><strong>Session Management</strong> - Secure user authentication and authorization</li>
+    <li><strong>Database Models</strong> - MongoDB collections for users and lectures</li>
+    <li><strong>Conflict Detection Algorithm</strong> - Time slot validation and overlap prevention</li>
+    <li><strong>Error Handling</strong> - Comprehensive error responses and logging</li>
+    <li><strong>Input Validation</strong> - Form data sanitization and validation</li>
+  </ul>
+  
+  <h3>Frontend Components</h3>
+  <ul>
+    <li><strong>Responsive Grid Layout</strong> - Dynamic schedule grid with time slots</li>
+    <li><strong>Modal Forms</strong> - Inline lecture editing and creation</li>
+    <li><strong>Dynamic Tab Navigation</strong> - Multi-lab switching without page reload</li>
+    <li><strong>Real-time Updates</strong> - AJAX-based CRUD operations</li>
+    <li><strong>Form Validation</strong> - Client-side and server-side validation</li>
+  </ul>
+  
+  <h2>📊 Database Schema</h2>
+  
+  <h3>Users Collection</h3>
+  <ul>
+    <li><code>username</code> - Unique user identifier</li>
+    <li><code>password</code> - User password (plaintext for demo purposes)</li>
+    <li><code>role</code> - User role (admin/user)</li>
+  </ul>
+  
+  <h3>Lectures Collection</h3>
+  <ul>
+    <li><code>course</code> - Course name or code</li>
+    <li><code>instructor</code> - Instructor name</li>
+    <li><code>days</code> - Days of week (compressed string: '123' = SUN,MON,TUE)</li>
+    <li><code>starttime</code> - Lecture start time (HH:MM format)</li>
+    <li><code>endtime</code> - Lecture end time (HH:MM format)</li>
+    <li><code>numberOfStudents</code> - Expected student count</li>
+    <li><code>lab</code> - Laboratory number (1-6)</li>
+  </ul>
+  
+  <h2>🔧 Key Features Implemented</h2>
+  
+  <h3>Core Functionality</h3>
+  <ul>
+    <li><strong>Multi-Lab Support</strong> - Manage schedules for 6 different laboratories</li>
+    <li><strong>Weekly Schedule Grid</strong> - Visual timetable with time slots (8 AM - 7 PM)</li>
+    <li><strong>Lecture Management</strong> - Create, read, update lectures via AJAX</li>
+    <li><strong>Conflict Detection</strong> - Prevent overlapping bookings in same lab/time</li>
+    <li><strong>User Authentication</strong> - Login/logout with session management</li>
+    <li><strong>Password Management</strong> - Change password functionality</li>
+  </ul>
+  
+  <h3>Advanced Features</h3>
+  <ul>
+    <li><strong>Smart Redirection</strong> - Return to specific lab after lecture operations</li>
+    <li><strong>Error Handling</strong> - Detailed error messages for login failures</li>
+    <li><strong>Responsive Design</strong> - Mobile-friendly interface</li>
+    <li><strong>Real-time Updates</strong> - No page refresh needed for most operations</li>
+    <li><strong>Modal Interactions</strong> - Inline editing with context preservation</li>
+  </ul>
+  
+  <h2>🔍 API Endpoints</h2>
+  <ul>
+    <li><code>GET/POST /</code> - Main index page with lab schedules</li>
+    <li><code>GET/POST /login</code> - User authentication</li>
+    <li><code>GET /logout</code> - Session termination</li>
+    <li><code>GET/POST /insert_lecture</code> - Create new lecture</li>
+    <li><code>GET/POST /update_lecture</code> - Modify existing lecture</li>
+    <li><code>GET /get_lecture</code> - Fetch specific lecture details</li>
+    <li><code>GET /lectures</code> - Get all lectures for a lab</li>
+    <li><code>POST /change_password</code> - Update user password</li>
+    <li><code>GET /cpanel</code> - Control panel for password management</li>
+    <li><code>GET /about</code> - Project information page</li>
+  </ul>
+  
+  <h2>💡 Learning Objectives Covered</h2>
+  <ul>
+    <li>Full-stack web development with Python and Flask</li>
+    <li>NoSQL database integration with MongoDB</li>
+    <li>RESTful API design and implementation</li>
+    <li>Frontend-backend communication with AJAX</li>
+    <li>User authentication and session management</li>
+    <li>Form validation and error handling</li>
+    <li>Responsive web design principles</li>
+    <li>Database modeling and query optimization</li>
+    <li>Security best practices (demo implementation)</li>
+    <li>Modern JavaScript and DOM manipulation</li>
+  </ul>
+  
+  <h2>🚀 Project Created By</h2>
+  <p><strong>Samy Abdellatif</strong></p>
+  <p>This project serves as a comprehensive learning resource for modern web development practices, demonstrating the integration of multiple technologies to create a functional laboratory management system.</p>
 </div>
 {% endblock %}
