@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-{% block labTable %}
-<div id="LAB{{ lab }}" class="tabcontent">
+{% block classroomTable %}
+<div id="CLASSROOM{{ classroom }}" class="tabcontent">
   <div id="TIME" class="flex-container">
 		<div>Time</div>
     {% for display_time in display_times %}
@@ -11,7 +11,7 @@
   <div id="{{ day }}" class="flex-container">
     <div>{{ day }}</div>
     {% for i in range(display_times|length) %}
-    <div class="cell" data-day="{{ day }}" data-time="{{ times[i] }}" data-lab="{{ lab }}">{{ schedule[day][times[i]] }}</div>
+    <div class="cell" data-day="{{ day }}" data-time="{{ times[i] }}" data-classroom="{{ classroom }}">{{ schedule[day][times[i]] }}</div>
     {% endfor %}
   </div>
   {% endfor %}
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function(){
         // (existing handler)
       const day = this.dataset.day;
       const time = this.dataset.time; // e.g. '08'
-      const lab = this.dataset.lab;
+      const classroom = this.dataset.classroom;
       // open modal
       const modal = document.getElementById('cpanel-modal');
       modal.style.display = 'flex';
@@ -48,22 +48,22 @@ document.addEventListener('DOMContentLoaded', function(){
       const form = document.getElementById('cpanel-form');
       form.action = '/insert_lecture';
       document.getElementById('lecture-id').value = '';
-      // prefill lab and time
-      document.getElementById('lab-select').value = lab;
+        // prefill classroom and time
+      document.getElementById('classroom-select').value = classroom;
       document.getElementById('starttime').value = timeKeyToHHMM(time);
       document.getElementById('endtime').value = '';
       document.getElementById('course').value = '';
       document.getElementById('instructor').value = '';
       document.getElementById('numberOfStudents').value = '';
-      // clear days
-      ['sun','mon','tue','wed','thu'].forEach(function(id){
-        const cb = document.getElementById(id);
+      // clear days dynamically
+      ['1','2','3','4','5'].forEach(function(code){
+        const cb = document.getElementById('day_'+code);
         if(cb) cb.checked = false;
       });
 
       // try to fetch existing lecture covering this slot
       try{
-        const resp = await fetch(`/get_lecture?lab=${encodeURIComponent(lab)}&day=${encodeURIComponent(day)}&time=${encodeURIComponent(time)}`);
+        const resp = await fetch(`/get_lecture?classroom=${encodeURIComponent(classroom)}&day=${encodeURIComponent(day)}&time=${encodeURIComponent(time)}`);
         if(resp.ok){
           const data = await resp.json();
           if(data && data._id){
@@ -74,13 +74,12 @@ document.addEventListener('DOMContentLoaded', function(){
             document.getElementById('starttime').value = data.starttime || '';
             document.getElementById('endtime').value = data.endtime || '';
             document.getElementById('numberOfStudents').value = data.numberOfStudents || '';
-            document.getElementById('lab-select').value = data.lab || lab;
+            document.getElementById('classroom-select').value = data.classroom || classroom;
             // set days
             if(data.days){
               // data.days is string like '13'
-              const map = {'1':'sun','2':'mon','3':'tue','4':'wed','5':'thu'};
               for(const ch of data.days){
-                const el = document.getElementById(map[ch]);
+                const el = document.getElementById('day_'+ch);
                 if(el) el.checked = true;
               }
             }

@@ -206,21 +206,15 @@
       <div class="form-group">
         <p>Days</p>
         <div class="checkbox-item" id="days-checkboxes">
-          <input type="checkbox" id="sun" name="days" value="1"/>
-          <label for="sun" class="check">SUN</label>
-          <input type="checkbox" id="mon" name="days" value="2"/>
-          <label for="mon" class="check">MON</label>
-          <input type="checkbox" id="tue" name="days" value="3"/>
-          <label for="tue" class="check">TUE</label>
-          <input type="checkbox" id="wed" name="days" value="4"/>
-          <label for="wed" class="check">WED</label>
-          <input type="checkbox" id="thu" name="days" value="5"/>
-          <label for="thu" class="check">THU</label>
+          {% for code in ['1','2','3','4','5'] %}
+            <input type="checkbox" id="day_{{ code }}" name="days" value="{{ code }}"/>
+            <label for="day_{{ code }}" class="check">{{ day_map[code] }}</label>
+          {% endfor %}
         </div>
       </div>
       <div class="form-group">
-        <p>Lab number</p>
-        <select name="lab" id="lab-select">
+        <p>Classroom number</p>
+        <select name="classroom" id="classroom-select">
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="3">3</option>

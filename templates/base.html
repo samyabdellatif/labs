@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Statistics Department Computer Labs Schedule</title>
+<title>Statistics Department Classroom Schedule</title>
 <style type="text/css">
 * {box-sizing: border-box}
 
@@ -78,7 +78,7 @@ body {
   height: 100%;
 }
 
-#LABX {background-color: orange;
+#CLASSROOMX {background-color: orange;
   min-width: 1080px;}
 
 .flex-container {
@@ -162,27 +162,27 @@ body {
     <a href="/login" style="float:right;">Login</a>
   {% endif %}
 </div>
-{% if show_lab_tabs %}
-<button class="tablink" id="LAB1link" onclick="openPage('1')">LAB1</button>
-<button class="tablink" id="LAB2link" onclick="openPage('2')">LAB2</button>
-<button class="tablink" id="LAB3link" onclick="openPage('3')">LAB3</button>
-<button class="tablink" id="LAB4link" onclick="openPage('4')">LAB4</button>
-<button class="tablink" id="LAB5link" onclick="openPage('5')">LAB5</button>
-<button class="tablink" id="LAB6link" onclick="openPage('6')">LAB6</button>
+{% if show_classroom_tabs %}
+<button class="tablink" id="CLASSROOM1link" onclick="openPage('1')">CLASSROOM1</button>
+<button class="tablink" id="CLASSROOM2link" onclick="openPage('2')">CLASSROOM2</button>
+<button class="tablink" id="CLASSROOM3link" onclick="openPage('3')">CLASSROOM3</button>
+<button class="tablink" id="CLASSROOM4link" onclick="openPage('4')">CLASSROOM4</button>
+<button class="tablink" id="CLASSROOM5link" onclick="openPage('5')">CLASSROOM5</button>
+<button class="tablink" id="CLASSROOM6link" onclick="openPage('6')">CLASSROOM6</button>
 {% endif %}
-{% block labTable %}{% endblock %}
-{% if show_lab_tabs %}
+{% block classroomTable %}{% endblock %}
+{% if show_classroom_tabs %}
 <script>
-function openPage(lab) {
-  window.location.href = '/index?lab='+lab;
+function openPage(classroom) {
+  window.location.href = '/index?classroom='+classroom;
   var i, tablinks;
   tablinks = document.getElementsByClassName("tablink");
   for (i = 0; i < tablinks.length; i++) {
     tablinks[i].style.backgroundColor = "";
   }
 }
-if (document.getElementById("LAB{{lab}}link")) {
-  document.getElementById("LAB{{lab}}link").style.backgroundColor = 'orange';
+if (document.getElementById("CLASSROOM{{classroom}}link")) {
+  document.getElementById("CLASSROOM{{classroom}}link").style.backgroundColor = 'orange';
 }
 </script>
 {% endif %}

@@ -32,6 +32,17 @@ if client:
     db = client.labsDB
     # convert into mongoDB document object
     collection = db.lectures
+    # one-time migration: rename 'lab' field to 'classroom' without data loss
+    try:
+        legacy_docs = list(collection.find({"classroom": {"$exists": False}, "lab": {"$exists": True}}))
+        for doc in legacy_docs:
+            lab_value = doc.get('lab')
+            update_ops = {'$set': {'classroom': lab_value}, '$unset': {'lab': ""}}
+            collection.update_one({'_id': doc['_id']}, update_ops)
+        if legacy_docs:
+            logging.info('Migrated %d lecture documents from lab -> classroom', len(legacy_docs))
+    except Exception as e:
+        logging.warning('Could not run lab->classroom migration: %s', e)
     # Ensure a users collection exists with the default admin user.
     try:
         existing = db.list_collection_names()
@@ -44,6 +55,13 @@ if client:
             logging.info('Created users collection and inserted default admin user')
         else:
             logging.info('Users collection already exists; skipping creation')
+        # Ensure global settings document exists
+        if 'settings' not in existing:
+            db.settings.insert_one({'_id': 'global', 'weekdays': 'sun-thu'})
+            logging.info('Initialized settings with default weekdays option sun-thu')
+        else:
+            # Make sure the document exists
+            db.settings.update_one({'_id': 'global'}, {'$setOnInsert': {'weekdays': 'sun-thu'}}, upsert=True)
     except Exception as e:
         logging.warning('Could not ensure users collection: %s', e)
 else:
@@ -61,10 +79,13 @@ cursor = collection.find()
 
 def has_conflict(new_lecture):
     """
-    Check if the new lecture conflicts with existing lectures in the same lab.
+    Check if the new lecture conflicts with existing lectures in the same classroom.
     A conflict occurs if there's any overlap in days and time slots.
     """
-    lab = new_lecture['lab']
+    classroom = new_lecture.get('classroom') or new_lecture.get('lab')
+    if not classroom:
+        logging.warning('Conflict check skipped: classroom value missing')
+        return False
     days = new_lecture['days']
     start = new_lecture['starttime']
     end = new_lecture['endtime']
@@ -87,8 +108,11 @@ def has_conflict(new_lecture):
         logging.warning('Skipping conflict check: invalid times for new_lecture: start=%r end=%r', start, end)
         return False
     
-    # Retrieve all existing lectures for the specified lab
-    existing = list(collection.find({"lab": lab}))
+    # Retrieve all existing lectures for the specified classroom
+    existing = list(collection.find({"classroom": classroom}))
+    if not existing:
+        # fallback if any legacy docs still use lab
+        existing = list(collection.find({"lab": classroom}))
     
     for lec in existing:
         lec_days = lec['days']
@@ -110,6 +134,31 @@ def has_conflict(new_lecture):
     return False  # No conflict
 #####################################
 
+# Settings helpers
+def get_weekday_setting():
+    """Return current weekday option: 'sun-thu' or 'mon-fri'. Defaults to 'sun-thu'."""
+    if db is None:
+        return 'sun-thu'
+    try:
+        doc = db.settings.find_one({'_id': 'global'})
+        opt = (doc or {}).get('weekdays', 'sun-thu')
+        return opt if opt in ('sun-thu', 'mon-fri') else 'sun-thu'
+    except Exception as e:
+        logging.warning('Failed to fetch settings: %s', e)
+        return 'sun-thu'
+
+def get_days_config():
+    """Return (days list, day_map dict, rev_map dict) based on settings."""
+    opt = get_weekday_setting()
+    if opt == 'mon-fri':
+        days = ['MON', 'TUE', 'WED', 'THU', 'FRI']
+        day_map = {'1': 'MON', '2': 'TUE', '3': 'WED', '4': 'THU', '5': 'FRI'}
+    else:
+        days = ['SUN', 'MON', 'TUE', 'WED', 'THU']
+        day_map = {'1': 'SUN', '2': 'MON', '3': 'TUE', '4': 'WED', '5': 'THU'}
+    rev_map = {v: k for k, v in day_map.items()}
+    return days, day_map, rev_map
+
 #starting coding the Flask app
 
 
@@ -122,20 +171,19 @@ labapp.secret_key = os.getenv('FLASK_SECRET_KEY', 'change-this-secret')
 @labapp.route('/index',methods=['GET', 'POST'])
 def index():
     """
-    Main index route that displays the lab schedule.
-    Retrieves the lab number from query parameters, fetches lectures,
+    Main index route that displays the classroom schedule.
+    Retrieves the classroom number from query parameters, fetches lectures,
     and builds a schedule grid for display.
     """
-    lab = request.args.get("lab")
-    if lab == None:
-        lab = "1"  # Default to lab 1 if not specified
+    classroom = request.args.get("classroom") or request.args.get("lab")
+    if classroom is None:
+        classroom = "1"  # Default to classroom 1 if not specified
     
-    # Fetch all lectures for the selected lab from MongoDB
-    lectures = list(collection.find({"lab": lab}))
+    # Fetch all lectures for the selected classroom from MongoDB (supports legacy 'lab' field)
+    lectures = list(collection.find({"$or": [{"classroom": classroom}, {"lab": classroom}]}))
     
-    # Define the days of the week and their mappings
-    days = ['SUN', 'MON', 'TUE', 'WED', 'THU']
-    day_map = {'1': 'SUN', '2': 'MON', '3': 'TUE', '4': 'WED', '5': 'THU'}
+    # Define the days of the week and their mappings (based on settings)
+    days, day_map, _ = get_days_config()
     # Time slots in 24-hour format (internal keys)
     times = ['08', '09', '10', '11', '12', '01', '02', '03', '04', '05', '06', '07']
     # Display times in 12-hour format with AM/PM
@@ -180,14 +228,15 @@ def index():
     
     # Render the index template with the populated schedule
     is_logged_in = bool(session.get('user'))
-    return render_template('index.html', lab=lab, days=days, times=times, display_times=display_times, schedule=schedule, show_lab_tabs=True, is_logged_in=is_logged_in)
+    return render_template('index.html', classroom=classroom, days=days, day_map=day_map, times=times, display_times=display_times, schedule=schedule, show_classroom_tabs=True, is_logged_in=is_logged_in)
 
 @labapp.route('/cpanel')
 def process():
     """
     Route for the control panel page where users can add new lectures.
     """
-    return render_template('cpanel.html', show_lab_tabs=False)
+    # Provide current weekday option to cpanel
+    return render_template('cpanel.html', show_classroom_tabs=False, weekday_option=get_weekday_setting())
 
 
 @labapp.route('/change_password', methods=['POST'])
@@ -202,46 +251,46 @@ def change_password():
     confirm = request.form.get('confirm_password')
 
     if not current or not new or not confirm:
-        return render_template('cpanel.html', show_lab_tabs=False, error='All fields are required')
+        return render_template('cpanel.html', show_classroom_tabs=False, error='All fields are required')
     if new != confirm:
-        return render_template('cpanel.html', show_lab_tabs=False, error='New passwords do not match')
+        return render_template('cpanel.html', show_classroom_tabs=False, error='New passwords do not match')
     if collection is None:
-        return render_template('cpanel.html', show_lab_tabs=False, error='Database not configured')
+        return render_template('cpanel.html', show_classroom_tabs=False, error='Database not configured')
 
     try:
         user_doc = db.users.find_one({'username': username})
     except Exception as e:
         logging.error('DB error fetching user: %s', e)
-        return render_template('cpanel.html', show_lab_tabs=False, error='Database error')
+        return render_template('cpanel.html', show_classroom_tabs=False, error='Database error')
 
     if not user_doc:
-        return render_template('cpanel.html', show_lab_tabs=False, error='User not found')
+        return render_template('cpanel.html', show_classroom_tabs=False, error='User not found')
     if user_doc.get('password') != current:
-        return render_template('cpanel.html', show_lab_tabs=False, error='Current password incorrect')
+        return render_template('cpanel.html', show_classroom_tabs=False, error='Current password incorrect')
 
     # update password (note: plaintext storage—consider hashing in future)
     try:
         db.users.update_one({'username': username}, {'$set': {'password': new}})
-        return render_template('cpanel.html', show_lab_tabs=False, success='Password updated successfully')
+        return render_template('cpanel.html', show_classroom_tabs=False, success='Password updated successfully')
     except Exception as e:
         logging.error('DB error updating password: %s', e)
-        return render_template('cpanel.html', show_lab_tabs=False, error='Failed to update password')
+        return render_template('cpanel.html', show_classroom_tabs=False, error='Failed to update password')
 
 
 @labapp.route('/get_lecture')
 def get_lecture():
     """
-    Return a single lecture covering the given lab/day/time, or empty JSON.
-    Query params: lab (str), day (e.g. 'MON'), time (key like '08')
+    Return a single lecture covering the given classroom/day/time, or empty JSON.
+    Query params: classroom (str), day (e.g. 'MON'), time (key like '08')
     """
-    lab = request.args.get('lab')
+    classroom = request.args.get('classroom') or request.args.get('lab')
     day = request.args.get('day')
     time_key = request.args.get('time')
-    if not lab or not day or not time_key:
+    if not classroom or not day or not time_key:
         return jsonify({})
 
-    # map day name back to code
-    rev_map = {'SUN':'1','MON':'2','TUE':'3','WED':'4','THU':'5'}
+    # map day name back to code based on settings
+    _, _, rev_map = get_days_config()
     day_code = rev_map.get(day)
     if not day_code:
         return jsonify({})
@@ -252,8 +301,8 @@ def get_lecture():
     except Exception:
         return jsonify({})
 
-    # Find candidate lectures in this lab that include the day
-    candidates = list(collection.find({"lab": lab}))
+    # Find candidate lectures in this classroom that include the day
+    candidates = list(collection.find({"$or": [{"classroom": classroom}, {"lab": classroom}]}))
     for lec in candidates:
         days = lec.get('days', '')
         if day_code in days:
@@ -283,12 +332,12 @@ def get_lecture():
 
 
 @labapp.route('/lectures')
-def lectures_for_lab():
-    """Return JSON list of lectures for a given lab."""
-    lab = request.args.get('lab')
-    if not lab:
+def lectures_for_classroom():
+    """Return JSON list of lectures for a given classroom."""
+    classroom = request.args.get('classroom') or request.args.get('lab')
+    if not classroom:
         return jsonify({'lectures': []})
-    docs = list(collection.find({'lab': lab}))
+    docs = list(collection.find({'$or': [{'classroom': classroom}, {'lab': classroom}]}))
     out = []
     for d in docs:
         o = {k: v for k, v in d.items() if k != '_id'}
@@ -327,7 +376,7 @@ def update_lecture():
     starttime = request.args.get('starttime') or request.form.get('starttime')
     endtime = request.args.get('endtime') or request.form.get('endtime')
     numberOfStudents = request.args.get('numberOfStudents') or request.form.get('numberOfStudents')
-    lab = request.args.get('lab') or request.form.get('lab')
+    classroom = request.args.get('classroom') or request.args.get('lab') or request.form.get('classroom') or request.form.get('lab')
     instructor = request.args.get('instructor') or request.form.get('instructor')
 
     # validate minimal required fields
@@ -342,36 +391,52 @@ def update_lecture():
         'starttime': starttime,
         'endtime': endtime,
         'numberOfStudents': numberOfStudents,
-        'lab': lab,
+        'classroom': classroom,
         'instructor': instructor,
     }
-
-    collection.update_one({'_id': oid}, {'$set': update})
+    collection.update_one({'_id': oid}, {'$set': update, '$unset': {'lab': ""}})
     # If AJAX call, return JSON so client can update view without reload
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         update_out = update.copy()
         update_out['_id'] = str(oid)
         return jsonify({'success': True, 'lecture': update_out})
 
-    # After updating, redirect back to the index page for the same lab
+    # After updating, redirect back to the index page for the same classroom
     try:
-        target_lab = lab if lab else '1'
+        target_classroom = classroom if classroom else '1'
     except Exception:
-        target_lab = '1'
-    return redirect(f"/index?lab={target_lab}")
+        target_classroom = '1'
+    return redirect(f"/index?classroom={target_classroom}")
 
 @labapp.route('/about')
 def about():
     """
     Route for the about page with information about the application.
     """
-    return render_template('about.html', show_lab_tabs=False)
+    return render_template('about.html', show_classroom_tabs=False)
+
+
+@labapp.route('/update_settings', methods=['POST'])
+def update_settings():
+    """Update global weekday option (requires login)."""
+    if not session.get('user'):
+        return redirect(url_for('login', next=url_for('process')))
+
+    option = request.form.get('weekday_option')
+    if option not in ('sun-thu', 'mon-fri'):
+        return render_template('cpanel.html', show_classroom_tabs=False, weekday_option=get_weekday_setting(), error='Invalid option')
+    try:
+        db.settings.update_one({'_id': 'global'}, {'$set': {'weekdays': option}}, upsert=True)
+        return render_template('cpanel.html', show_classroom_tabs=False, weekday_option=option, success='Settings updated')
+    except Exception as e:
+        logging.error('DB error updating settings: %s', e)
+        return render_template('cpanel.html', show_classroom_tabs=False, weekday_option=get_weekday_setting(), error='Failed to update settings')
 
 
 @labapp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
-        return render_template('login.html', show_lab_tabs=False)
+        return render_template('login.html', show_classroom_tabs=False)
 
     # POST: authenticate
     username = request.form.get('username')
@@ -380,7 +445,7 @@ def login():
     
     # Validate input fields
     if not username or not password:
-        return render_template('login.html', show_lab_tabs=False, error='Please enter both username and password')
+        return render_template('login.html', show_classroom_tabs=False, error='Please enter both username and password')
     
     user_found = db.users.find_one({"username": username})
 
@@ -391,9 +456,9 @@ def login():
             session['user'] = username
             return redirect(next_url) # "Login successful!"
         else:
-            return render_template('login.html', show_lab_tabs=False, error='Incorrect password. Please try again.')
+            return render_template('login.html', show_classroom_tabs=False, error='Incorrect password. Please try again.')
     else:
-        return render_template('login.html', show_lab_tabs=False, error='User not found. Please check your username.')
+        return render_template('login.html', show_classroom_tabs=False, error='User not found. Please check your username.')
 
 
 @labapp.route('/logout')
@@ -426,7 +491,7 @@ def insert_lecture():
     starttime = request.args.get("starttime") or request.form.get("starttime")
     endtime = request.args.get("endtime") or request.form.get("endtime")
     numberOfStudents = request.args.get("numberOfStudents") or request.form.get("numberOfStudents")
-    lab = request.args.get("lab") or request.form.get("lab")
+    classroom = request.args.get("classroom") or request.args.get("lab") or request.form.get("classroom") or request.form.get("lab")
     instructor = request.args.get("instructor") or request.form.get("instructor")
 
     # validate minimal required fields
@@ -442,7 +507,7 @@ def insert_lecture():
     "starttime" : starttime,
     "endtime" : endtime,
     "numberOfStudents" : numberOfStudents,
-    "lab" : lab,
+    "classroom" : classroom,
     "instructor" : instructor
     }
 
@@ -450,7 +515,7 @@ def insert_lecture():
     if has_conflict(lecture):
         return '''<html>
                   <body>
-                  <h1>Conflict detected: Lab is not free during this time slot</h1>
+                  <h1>Conflict detected: Classroom is not free during this time slot</h1>
                       <a href="/index">Home Page</a> |
                       <a href="/cpanel">Add lecture</a>
                   </body>
@@ -465,9 +530,9 @@ def insert_lecture():
         lecture_out['_id'] = str(result.inserted_id)
         return jsonify({'success': True, 'lecture': lecture_out})
 
-    # Redirect to the index page for the same lab where the lecture was inserted
-    target_lab = lab if lab else '1'
-    return redirect(f"/index?lab={target_lab}")
+    # Redirect to the index page for the same classroom where the lecture was inserted
+    target_classroom = classroom if classroom else '1'
+    return redirect(f"/index?classroom={target_classroom}")
 # Run the Flask application
 if __name__ == '__main__':
     labapp.run(debug=True, port=5000)  # Run app in debug mode on port 5000
