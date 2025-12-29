@@ -3,9 +3,7 @@
   <div class="container">
     <h2>Login</h2>
     {% if error %}
-      <div style="color: red; margin-bottom: 15px; padding: 10px; border: 1px solid #ff6b6b; background-color: #ffe6e6; border-radius: 4px;">
-        {{ error }}
-      </div>
+      <div style="color: red; margin-bottom: 15px; padding: 10px; border: 1px solid #ff6b6b; background-color: #ffe6e6; border-radius: 4px;">{{ error }}</div>
     {% endif %}
     <form action="/login" method="POST" style="max-width:400px;margin:0 auto;">
       <div style="margin-bottom:10px;">

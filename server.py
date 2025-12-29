@@ -1,7 +1,4 @@
-# This web app is build as a training on MONGO databases
-# and FLASK framework, it's completely free , you can edit and use the code
-# Creaded by Samy Abdellatif
-# import required packages
+# Simple Flask app using MongoDB
 import os
 import logging
 from dotenv import load_dotenv
@@ -9,10 +6,10 @@ from pymongo import MongoClient
 from flask import Flask, request, redirect, render_template, jsonify, session, url_for
 from bson.objectid import ObjectId
 
-# Load environment variables from .env file
+# Load environment variables
 load_dotenv()
 
-# basic logging
+# Logging
 logging.basicConfig(level=logging.INFO)
 
 # Getting the data from process.html form then
@@ -20,7 +17,6 @@ logging.basicConfig(level=logging.INFO)
 # connecting to the database
 client = None
 try:
-    # Get MongoDB connection string from environment variable
     mongo_uri = os.getenv('MONGO_URI', 'mongodb://localhost:27017')
     client = MongoClient(mongo_uri)
     print("Connected successfully!!!")
@@ -30,20 +26,9 @@ except Exception as e:
 # database
 if client:
     db = client.classroomsDB
-    # convert into mongoDB document object
     collection = db.classroom
-    # one-time migration: rename 'lab' field to 'classroom' without data loss
-    try:
-        legacy_docs = list(collection.find({"classroom": {"$exists": False}, "lab": {"$exists": True}}))
-        for doc in legacy_docs:
-            lab_value = doc.get('lab')
-            update_ops = {'$set': {'classroom': lab_value}, '$unset': {'lab': ""}}
-            collection.update_one({'_id': doc['_id']}, update_ops)
-        if legacy_docs:
-            logging.info('Migrated %d lecture documents from lab -> classroom', len(legacy_docs))
-    except Exception as e:
-        logging.warning('Could not run lab->classroom migration: %s', e)
-    # Ensure a users collection exists with the default admin user.
+        # Initialization remains minimal
+    # ensure default user and settings
     try:
         existing = db.list_collection_names()
         if 'users' not in existing:
@@ -69,20 +54,11 @@ else:
     db = None
     collection = None
 
-# load the full database into cursor
-cursor = collection.find()
-# for record in cursor:
-# 	print(record)
-
 #####################################
-######### GOODIES ###################
 
 def has_conflict(new_lecture):
-    """
-    Check if the new lecture conflicts with existing lectures in the same classroom.
-    A conflict occurs if there's any overlap in days and time slots.
-    """
-    classroom = new_lecture.get('classroom') or new_lecture.get('lab')
+    """Detect classroom time conflicts."""
+    classroom = new_lecture.get('classroom')
     if not classroom:
         logging.warning('Conflict check skipped: classroom value missing')
         return False
@@ -90,7 +66,7 @@ def has_conflict(new_lecture):
     start = new_lecture['starttime']
     end = new_lecture['endtime']
     
-    # helper to parse time strings like '08:00' into minutes since midnight
+    # parse HH:MM into minutes
     def parse_time_min(t):
         if not t or ':' not in t:
             return None
@@ -101,34 +77,31 @@ def has_conflict(new_lecture):
         except Exception:
             return None
 
-    # Convert start and end times to minutes since midnight for easy comparison
+    # normalize times
     start_min = parse_time_min(start)
     end_min = parse_time_min(end)
     if start_min is None or end_min is None:
         logging.warning('Skipping conflict check: invalid times for new_lecture: start=%r end=%r', start, end)
         return False
     
-    # Retrieve all existing lectures for the specified classroom
+    # lectures for this classroom
     existing = list(collection.find({"classroom": classroom}))
-    if not existing:
-        # fallback if any legacy docs still use lab
-        existing = list(collection.find({"lab": classroom}))
     
     for lec in existing:
         lec_days = lec['days']
         lec_start = lec['starttime']
         lec_end = lec['endtime']
-        # Convert existing lecture times to minutes
+        # convert lecture times
         lec_start_min = parse_time_min(lec_start)
         lec_end_min = parse_time_min(lec_end)
         if lec_start_min is None or lec_end_min is None:
             logging.warning('Skipping existing lecture during conflict check due to invalid times: %r', lec)
             continue
         
-        # Check for overlapping days
+        # overlapping days
         for d in days:
             if d in lec_days:
-                # Check for time overlap on the same day
+                # overlapping time
                 if start_min < lec_end_min and lec_start_min < end_min:
                     return True  # Conflict detected
     return False  # No conflict
@@ -159,40 +132,32 @@ def get_days_config():
     rev_map = {v: k for k, v in day_map.items()}
     return days, day_map, rev_map
 
-#starting coding the Flask app
+app = Flask(__name__)
+# Secret key
+app.secret_key = os.getenv('FLASK_SECRET_KEY', 'change-this-secret')
 
-
-
-labapp = Flask(__name__) #create the Flask app
-# Secret key for session management; prefer env var
-labapp.secret_key = os.getenv('FLASK_SECRET_KEY', 'change-this-secret')
-
-@labapp.route('/',methods=['GET', 'POST'])
-@labapp.route('/index',methods=['GET', 'POST'])
+@app.route('/',methods=['GET', 'POST'])
+@app.route('/index',methods=['GET', 'POST'])
 def index():
-    """
-    Main index route that displays the classroom schedule.
-    Retrieves the classroom number from query parameters, fetches lectures,
-    and builds a schedule grid for display.
-    """
-    classroom = request.args.get("classroom") or request.args.get("lab")
+    """Show classroom schedule."""
+    classroom = request.args.get("classroom")
     if classroom is None:
         classroom = "1"  # Default to classroom 1 if not specified
     
-    # Fetch all lectures for the selected classroom from MongoDB (supports legacy 'lab' field)
-    lectures = list(collection.find({"$or": [{"classroom": classroom}, {"lab": classroom}]}))
+    # Fetch all lectures for the selected classroom from MongoDB
+    lectures = list(collection.find({"classroom": classroom}))
     
-    # Define the days of the week and their mappings (based on settings)
+    # days/mappings from settings
     days, day_map, _ = get_days_config()
     # Time slots in 24-hour format (internal keys)
     times = ['08', '09', '10', '11', '12', '01', '02', '03', '04', '05', '06', '07']
     # Display times in 12-hour format with AM/PM
     display_times = ['8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM', '6:00 PM', '7:00 PM']
     
-    # Initialize an empty schedule grid
+    # empty schedule
     schedule = {day: {time: '' for time in times} for day in days}
     
-    # Populate the schedule with lecture data
+    # fill schedule
     for lecture in lectures:
         course = lecture.get('course', '')
         instructor = lecture.get('instructor', '')
@@ -200,17 +165,17 @@ def index():
         starttime = lecture.get('starttime', '00:00')
         endtime = lecture.get('endtime', '00:00')
         
-        # Extract hour from time strings
+        # extract hour
         start_hour = int(starttime.split(':')[0])
         end_hour = int(endtime.split(':')[0])
         
-        # Convert 12-hour format to 24-hour if necessary (assuming times before 8 are PM)
+        # normalize hours
         if start_hour < 8:
             start_hour += 12
         if end_hour < 8:
             end_hour += 12
         
-        # Generate the list of time slots covered by this lecture
+        # covered slots
         time_slots = []
         for h in range(start_hour, end_hour):
             if h <= 12:
@@ -218,7 +183,7 @@ def index():
             else:
                 time_slots.append(f"{h-12:02d}")
         
-        # Assign the lecture to the appropriate days and time slots in the schedule
+        # assign to days/slots
         for d in days_str:
             day_name = day_map.get(d)
             if day_name and day_name in days:
@@ -226,22 +191,20 @@ def index():
                     if t in times:
                         schedule[day_name][t] = f"{course} - {instructor}"
     
-    # Render the index template with the populated schedule
+    # render
     is_logged_in = bool(session.get('user'))
     return render_template('index.html', classroom=classroom, days=days, day_map=day_map, times=times, display_times=display_times, schedule=schedule, show_classroom_tabs=True, is_logged_in=is_logged_in)
 
-@labapp.route('/cpanel')
+@app.route('/cpanel')
 def process():
-    """
-    Route for the control panel page where users can add new lectures.
-    """
+    """Control panel."""
     # Provide current weekday option to cpanel
     return render_template('cpanel.html', show_classroom_tabs=False, weekday_option=get_weekday_setting())
 
 
-@labapp.route('/change_password', methods=['POST'])
+@app.route('/change_password', methods=['POST'])
 def change_password():
-    """Allow logged-in user to change own password stored in users collection."""
+    """Change password."""
     if not session.get('user'):
         return redirect(url_for('login', next=url_for('process')))
 
@@ -277,19 +240,16 @@ def change_password():
         return render_template('cpanel.html', show_classroom_tabs=False, error='Failed to update password')
 
 
-@labapp.route('/get_lecture')
+@app.route('/get_lecture')
 def get_lecture():
-    """
-    Return a single lecture covering the given classroom/day/time, or empty JSON.
-    Query params: classroom (str), day (e.g. 'MON'), time (key like '08')
-    """
-    classroom = request.args.get('classroom') or request.args.get('lab')
+    """Return lecture covering classroom/day/time."""
+    classroom = request.args.get('classroom')
     day = request.args.get('day')
     time_key = request.args.get('time')
     if not classroom or not day or not time_key:
         return jsonify({})
 
-    # map day name back to code based on settings
+    # day name → code
     _, _, rev_map = get_days_config()
     day_code = rev_map.get(day)
     if not day_code:
@@ -302,7 +262,7 @@ def get_lecture():
         return jsonify({})
 
     # Find candidate lectures in this classroom that include the day
-    candidates = list(collection.find({"$or": [{"classroom": classroom}, {"lab": classroom}]}))
+    candidates = list(collection.find({"classroom": classroom}))
     for lec in candidates:
         days = lec.get('days', '')
         if day_code in days:
@@ -331,13 +291,13 @@ def get_lecture():
     return jsonify({})
 
 
-@labapp.route('/lectures')
+@app.route('/lectures')
 def lectures_for_classroom():
-    """Return JSON list of lectures for a given classroom."""
-    classroom = request.args.get('classroom') or request.args.get('lab')
+    """List lectures for a classroom (JSON)."""
+    classroom = request.args.get('classroom')
     if not classroom:
         return jsonify({'lectures': []})
-    docs = list(collection.find({'$or': [{'classroom': classroom}, {'lab': classroom}]}))
+    docs = list(collection.find({'classroom': classroom}))
     out = []
     for d in docs:
         o = {k: v for k, v in d.items() if k != '_id'}
@@ -346,12 +306,9 @@ def lectures_for_classroom():
     return jsonify({'lectures': out})
 
 
-@labapp.route('/update_lecture', methods=['GET', 'POST'])
+@app.route('/update_lecture', methods=['GET', 'POST'])
 def update_lecture():
-    """
-    Update an existing lecture by id.
-    Accepts same params as insert_lecture plus 'id' of document.
-    """
+    """Update a lecture by id."""
     if collection is None:
         return 'Database not configured', 500
 
@@ -376,10 +333,10 @@ def update_lecture():
     starttime = request.args.get('starttime') or request.form.get('starttime')
     endtime = request.args.get('endtime') or request.form.get('endtime')
     numberOfStudents = request.args.get('numberOfStudents') or request.form.get('numberOfStudents')
-    classroom = request.args.get('classroom') or request.args.get('lab') or request.form.get('classroom') or request.form.get('lab')
+    classroom = request.args.get('classroom') or request.form.get('classroom')
     instructor = request.args.get('instructor') or request.form.get('instructor')
 
-    # validate minimal required fields
+    # minimal validation
     if not starttime or not endtime:
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return jsonify({'success': False, 'error': 'starttime and endtime required'}), 400
@@ -394,29 +351,27 @@ def update_lecture():
         'classroom': classroom,
         'instructor': instructor,
     }
-    collection.update_one({'_id': oid}, {'$set': update, '$unset': {'lab': ""}})
-    # If AJAX call, return JSON so client can update view without reload
+    collection.update_one({'_id': oid}, {'$set': update})
+    # AJAX response
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         update_out = update.copy()
         update_out['_id'] = str(oid)
         return jsonify({'success': True, 'lecture': update_out})
 
-    # After updating, redirect back to the index page for the same classroom
+    # redirect back
     try:
         target_classroom = classroom if classroom else '1'
     except Exception:
         target_classroom = '1'
     return redirect(f"/index?classroom={target_classroom}")
 
-@labapp.route('/about')
+@app.route('/about')
 def about():
-    """
-    Route for the about page with information about the application.
-    """
+    """About page."""
     return render_template('about.html', show_classroom_tabs=False)
 
 
-@labapp.route('/update_settings', methods=['POST'])
+@app.route('/update_settings', methods=['POST'])
 def update_settings():
     """Update global weekday option (requires login)."""
     if not session.get('user'):
@@ -433,7 +388,7 @@ def update_settings():
         return render_template('cpanel.html', show_classroom_tabs=False, weekday_option=get_weekday_setting(), error='Failed to update settings')
 
 
-@labapp.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
         return render_template('login.html', show_classroom_tabs=False)
@@ -461,7 +416,7 @@ def login():
         return render_template('login.html', show_classroom_tabs=False, error='User not found. Please check your username.')
 
 
-@labapp.route('/logout')
+@app.route('/logout')
 def logout():
     session.pop('user', None)
     # redirect back to home or referer
@@ -470,12 +425,9 @@ def logout():
         return redirect(ref)
     return redirect(url_for('index'))
 
-@labapp.route('/insert_lecture', methods=['GET', 'POST']) #allow both GET and POST requests
+@app.route('/insert_lecture', methods=['GET', 'POST']) #allow both GET and POST requests
 def insert_lecture():
-    """
-    Route to insert a new lecture into the database.
-    Retrieves form data, checks for conflicts, and inserts if no conflicts exist.
-    """
+    """Insert a new lecture."""
     if collection is None:
         return 'Database not configured', 500
 
@@ -491,16 +443,16 @@ def insert_lecture():
     starttime = request.args.get("starttime") or request.form.get("starttime")
     endtime = request.args.get("endtime") or request.form.get("endtime")
     numberOfStudents = request.args.get("numberOfStudents") or request.form.get("numberOfStudents")
-    classroom = request.args.get("classroom") or request.args.get("lab") or request.form.get("classroom") or request.form.get("lab")
+    classroom = request.args.get("classroom") or request.form.get("classroom")
     instructor = request.args.get("instructor") or request.form.get("instructor")
 
-    # validate minimal required fields
+    # minimal validation
     if not starttime or not endtime:
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return jsonify({'success': False, 'error': 'starttime and endtime required'}), 400
         return 'starttime and endtime required', 400
     
-    # Create lecture object from form data
+    # lecture doc
     lecture = {
     "course" : course,
     "days" : days,
@@ -511,7 +463,7 @@ def insert_lecture():
     "instructor" : instructor
     }
 
-    # Check for scheduling conflicts before inserting
+    # conflict check
     if has_conflict(lecture):
         return '''<html>
                   <body>
@@ -521,18 +473,18 @@ def insert_lecture():
                   </body>
                   </html>'''
 
-    # Insert the lecture into the database
+    # insert
     result = collection.insert_one(lecture)
 
-    # If request originates from AJAX, return JSON for client-side update
+    # AJAX response
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         lecture_out = lecture.copy()
         lecture_out['_id'] = str(result.inserted_id)
         return jsonify({'success': True, 'lecture': lecture_out})
 
-    # Redirect to the index page for the same classroom where the lecture was inserted
+    # redirect back
     target_classroom = classroom if classroom else '1'
     return redirect(f"/index?classroom={target_classroom}")
-# Run the Flask application
+# Run app
 if __name__ == '__main__':
-    labapp.run(debug=True, port=5000)  # Run app in debug mode on port 5000
+    app.run(debug=True, port=5000)  # Run app in debug mode on port 5000

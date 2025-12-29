@@ -1,6 +1,6 @@
-# Laboratory Schedule Management System
+# Classroom Schedule Management System
 
-A comprehensive web application for managing laboratory schedules and lecture bookings, built with Python, Flask, and MongoDB.
+A comprehensive web application for managing classroom schedules and lecture bookings, built with Python, Flask, and MongoDB.
 
 ## 🚀 Quick Start
 
@@ -102,18 +102,18 @@ A comprehensive web application for managing laboratory schedules and lecture bo
 ```
 labs/
 ├── server.py                 # Main Flask application
-├── setup.py                 # Automated setup script
+├── setup.py                  # Automated setup script
 ├── requirements.txt          # Python dependencies
-├── .env.example             # Environment variables template
-├── .env                     # Environment variables (create this)
-├── README.md                # This file
-└── templates/               # HTML templates
-    ├── base.html           # Base template with navigation
-    ├── index.html          # Main schedule view
-    ├── cpanel.html         # Control panel
-    ├── login.html          # User login
-    ├── about.html          # About page
-    └── _lecture_form.html  # Lecture form partial
+├── .env.example              # Environment variables template
+├── .env                      # Environment variables (create this)
+├── README.md                 # This file
+└── templates/                # HTML templates
+   ├── base.html             # Base template with navigation
+   ├── index.html            # Main schedule view
+   ├── cpanel.html           # Control panel
+   ├── login.html            # User login
+   ├── about.html            # About page
+   └── _lecture_form.html    # Lecture form partial
 ```
 
 ## 🛠️ Technologies Used
@@ -126,7 +126,7 @@ labs/
 
 ## 📋 Features
 
-- Multi-lab schedule management (6 laboratories)
+- Multi-classroom schedule management (6 classrooms)
 - Weekly timetable with conflict detection
 - User authentication and session management
 - Real-time updates via AJAX
@@ -152,14 +152,16 @@ The application automatically creates these collections:
    - `password`: User password
    - `role`: User role (admin/user)
 
-2. **lectures** - Schedule data
+2. **classroom** - Schedule data
    - `course`: Course name
    - `instructor`: Instructor name
    - `days`: Days of week (e.g., '123' = SUN,MON,TUE)
    - `starttime`: Start time (HH:MM format)
    - `endtime`: End time (HH:MM format)
    - `numberOfStudents`: Expected student count
-   - `lab`: Laboratory number (1-6)
+   - `classroom`: Classroom number (1-6)
+
+Legacy cleanup: if older documents still contain `lab`, run `python cleanup_remove_lab_field.py` to unset it across `classroomsDB.classroom`.
 
 ## 🐛 Troubleshooting
 
@@ -202,7 +204,7 @@ The application automatically creates these collections:
 
 1. **Debug Mode**: The app runs in debug mode by default. Disable for production:
    ```python
-   labapp.run(debug=False, port=5000)
+   app.run(debug=False, port=5000)
    ```
 
 2. **Database Reset**: To clear all data, connect to MongoDB and drop the collections:
@@ -210,7 +212,7 @@ The application automatically creates these collections:
    // In MongoDB shell
    use classroomsDB
    db.users.drop()
-   db.lectures.drop()
+   db.classroom.drop()
    ```
 
 ## 🤝 Contributing

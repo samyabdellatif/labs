@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Setup script for Laboratory Schedule Management System
+Setup script for Classroom Schedule Management System
 This script helps users set up the project environment
 """
 
@@ -80,7 +80,7 @@ def install_dependencies():
 
 def main():
     """Main setup function"""
-    print("🚀 Setting up Laboratory Schedule Management System")
+    print("🚀 Setting up Classroom Schedule Management System")
     print("=" * 50)
     
     # Check Python version

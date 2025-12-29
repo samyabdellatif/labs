@@ -16,7 +16,6 @@
   </div>
   {% endfor %}
 </div>
-<!-- Modal for cpanel form -->
 <div id="cpanel-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
   <div style="background:#fff; max-width:900px; width:95%; margin:auto; padding:10px; border-radius:6px; position:relative;">
     <button id="cpanel-close" style="position:absolute; right:10px; top:10px;">Close</button>
@@ -26,7 +25,6 @@
 
 <script>
 const IS_LOGGED_IN = {% if session.get('user') %}true{% else %}false{% endif %};
-// helper to convert time key like '08' to '08:00'
 function timeKeyToHHMM(key){
   return key + ':00';
 }
@@ -37,7 +35,6 @@ document.addEventListener('DOMContentLoaded', function(){
     if(IS_LOGGED_IN){
       el.style.cursor = 'pointer';
       el.addEventListener('click', async function(){
-        // (existing handler)
       const day = this.dataset.day;
       const time = this.dataset.time; // e.g. '08'
       const classroom = this.dataset.classroom;
@@ -61,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function(){
         if(cb) cb.checked = false;
       });
 
-      // try to fetch existing lecture covering this slot
+      // fetch existing lecture for this slot
       try{
         const resp = await fetch(`/get_lecture?classroom=${encodeURIComponent(classroom)}&day=${encodeURIComponent(day)}&time=${encodeURIComponent(time)}`);
         if(resp.ok){
