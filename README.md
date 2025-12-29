@@ -71,7 +71,7 @@ A comprehensive web application for managing laboratory schedules and lecture bo
    Then edit `.env` with your configuration:
    ```env
    # MongoDB Connection String
-   MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/labsDB
+   MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/classroomsDB
    
    # Flask Secret Key (generate a secure key)
    FLASK_SECRET_KEY=your-secret-key-here
@@ -85,7 +85,7 @@ A comprehensive web application for managing laboratory schedules and lecture bo
 
    **For Local MongoDB:**
    ```env
-   MONGO_URI=mongodb://localhost:27017/labsDB
+   MONGO_URI=mongodb://localhost:27017/classroomsDB
    ```
 
 5. **Run the application**
@@ -208,7 +208,7 @@ The application automatically creates these collections:
 2. **Database Reset**: To clear all data, connect to MongoDB and drop the collections:
    ```javascript
    // In MongoDB shell
-   use labsDB
+   use classroomsDB
    db.users.drop()
    db.lectures.drop()
    ```

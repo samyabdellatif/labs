@@ -16,7 +16,7 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 
 # Getting the data from process.html form then
-# inserting data in MongoDB labsDB database
+# inserting data in MongoDB classroomsDB database
 # connecting to the database
 client = None
 try:
@@ -29,9 +29,9 @@ except Exception as e:
 
 # database
 if client:
-    db = client.labsDB
+    db = client.classroomsDB
     # convert into mongoDB document object
-    collection = db.lectures
+    collection = db.classroom
     # one-time migration: rename 'lab' field to 'classroom' without data loss
     try:
         legacy_docs = list(collection.find({"classroom": {"$exists": False}, "lab": {"$exists": True}}))
